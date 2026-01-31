@@ -267,11 +267,20 @@ class Result(object):
 
                 # 根据 uri 获取 1080p 视频
                 if item == "play_addr":
-                    dataNew[item]["uri"] = dataRaw["bit_rate"][0]["play_addr"]["uri"]
-                    # 使用 这个api 可以获得1080p
-                    # dataNew[item]["url_list"] = "https://aweme.snssdk.com/aweme/v1/play/?video_id=%s&ratio=1080p&line=0" \
-                    #                             % dataNew[item]["uri"]
-                    dataNew[item]["url_list"] = copy.deepcopy(dataRaw["bit_rate"][0]["play_addr"]["url_list"])
+                    # 支持两种数据结构:
+                    # 1. API响应: dataRaw["bit_rate"][0]["play_addr"]
+                    # 2. SSR数据: dataRaw["play_addr"] (直接包含 uri 和 url_list)
+                    if "bit_rate" in dataRaw and dataRaw["bit_rate"]:
+                        # API 响应结构
+                        dataNew[item]["uri"] = dataRaw["bit_rate"][0]["play_addr"]["uri"]
+                        dataNew[item]["url_list"] = copy.deepcopy(dataRaw["bit_rate"][0]["play_addr"]["url_list"])
+                    elif "play_addr" in dataRaw:
+                        # SSR 数据结构 (mobile share page)
+                        play_addr_data = dataRaw["play_addr"]
+                        if "uri" in play_addr_data:
+                            dataNew[item]["uri"] = play_addr_data["uri"]
+                        if "url_list" in play_addr_data:
+                            dataNew[item]["url_list"] = copy.deepcopy(play_addr_data["url_list"])
                     continue
 
                 # 常规 递归遍历 字典

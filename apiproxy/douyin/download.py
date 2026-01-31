@@ -26,13 +26,14 @@ logger = logging.getLogger("douyin_downloader")
 console = Console()
 
 class Download(object):
-    def __init__(self, thread=5, music=True, cover=True, avatar=True, resjson=True, folderstyle=True):
+    def __init__(self, thread=5, music=True, cover=True, avatar=True, resjson=True, folderstyle=True, custom_headers=None):
         self.thread = thread
         self.music = music
         self.cover = cover
         self.avatar = avatar
         self.resjson = resjson
         self.folderstyle = folderstyle
+        self.custom_headers = custom_headers  # Support for TikTok headers
         self.console = Console()
         self.progress = Progress(
             SpinnerColumn(),
@@ -209,7 +210,9 @@ class Download(object):
 
         for attempt in range(self.retry_times):
             try:
-                response = requests.get(url, headers={**douyin_headers, **headers},
+                # Use custom headers if provided (for TikTok), otherwise use douyin_headers
+                base_headers = self.custom_headers if self.custom_headers else douyin_headers
+                response = requests.get(url, headers={**base_headers, **headers},
                                      stream=True, timeout=self.timeout)
 
                 if response.status_code not in (200, 206):

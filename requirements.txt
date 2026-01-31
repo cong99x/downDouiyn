@@ -2,6 +2,7 @@
 requests==2.31.0          # HTTP 请求库
 pyyaml==6.0.1            # YAML 配置支持
 rich==13.7.0             # 终端美化
+boto3>=1.34.0            # AWS SDK
 
 # Async support (optional)
 aiohttp>=3.8.0           # 异步 HTTP

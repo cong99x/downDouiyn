@@ -1,30 +1,30 @@
-# DouYinCommand.py 配置文件
-# 必需配置项
+# DouYinCommand.py Configuration File
+# Required items
 
-# 下载链接列表
+# Download link list
 link:
   # - https://v.douyin.com/gNv_ZvhuEr0/
   - https://v.douyin.com/3uGJzMxBwTI/
 
-# 下载保存路径
+# Download save path
 path: ./Downloaded/
 
-# 下载线程数
+# Number of download threads
 thread: 5
 
-# 下载模式 (主页链接时生效)
+# Download mode (Effective when using homepage links)
 mode:
   - post
 
-# 下载数量限制
+# Download quantity limits
 number:
-  post: 3      # 作品数量 (0表示全部)
-  like: 3      # 喜欢数量
-  music: 3     # 音乐数量
-  mix: 3       # 合集数量
-  allmix: 3    # 所有合集数量
+  post: 3      # Number of posts (0 for all)
+  like: 3      # Number of likes
+  music: 3     # Number of music tracks
+  mix: 3       # Number of collections
+  allmix: 3    # Number of all collections
 
-# 增量下载设置
+# Incremental download settings
 increase:
   post: false
   like: false
@@ -32,19 +32,19 @@ increase:
   mix: false
   allmix: false
 
-# 下载内容设置
-music: true       # 下载背景音乐
-cover: true       # 下载封面
-avatar: true      # 下载头像
-json: true        # 保存JSON信息
-database: true    # 使用数据库
-folderstyle: true # 按文件夹分类
+# Download content settings
+music: true       # Download background music
+cover: true       # Download cover
+avatar: true      # Download avatar
+json: true        # Save JSON info
+database: true    # Use database
+folderstyle: true # Classify by folder
 
-# 时间过滤
+# Time filtering
 start_time: ''
 end_time: ''
 
-# Cookie配置 (可选)
+# Cookie configuration (Optional)
 cookie: ''
 
 # 或使用键值对方式

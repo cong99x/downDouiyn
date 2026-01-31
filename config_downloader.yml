@@ -1,17 +1,17 @@
-# downloader.py 配置文件
+# downloader.py Configuration File
 
-# 下载链接列表
+# Download link list
 link:
   - https://v.douyin.com/gNv_ZvhuEr0/
 
-# 下载模式
+# Download mode
 mode:
   - post
 
-# 下载保存路径
+# Download save path
 path: ./Downloaded/
 
-# 每种类型下载数量限制
+# Quantity limits for each type
 number:
   post: 3
   like: 3
@@ -19,7 +19,7 @@ number:
   mix: 3
   allmix: 3
 
-# 增量下载设置
+# Incremental download settings
 increase:
   post: false
   like: false
@@ -27,22 +27,22 @@ increase:
   mix: false
   allmix: false
 
-# 下载内容设置
+# Download content settings
 cover: true
 music: true
 json: true
 database: true
 
-# 时间范围设置
+# Time range settings
 start_time: ''
 end_time: ''
 
-# 重试次数
+# Retry attempts
 retry_times: 3
 
-# Cookie配置 - 使用yt-dlp提取的真实Cookie
+# Cookie configuration - Use real Cookies extracted by yt-dlp
 cookies:
-  # 从yt-dlp提取的真实Cookie（已解密）
+  # Real Cookies extracted from yt-dlp (Decrypted)
   sessionid: 46df3e084f46dde2744cf8ada9340715
   sessionid_ss: 46df3e084f46dde2744cf8ada9340715
   sid_guard: 46df3e084f46dde2744cf8ada9340715%7C1757729470%7C5184000%7CWed%2C+12-Nov-2025+02%3A11%3A10+GMT

@@ -1,135 +1,135 @@
-# 项目实现总结
+# Project Implementation Summary
 
-## 项目信息
+## Project Information
 
-- **项目名称**: Douyin Downloader (dy-downloader)
-- **版本**: 1.0.0
-- **创建时间**: 2025-10-08
-- **实现状态**: ✅ 完成
+- **Project Name**: Douyin Downloader (dy-downloader)
+- **Version**: 1.0.0
+- **Creation Time**: 2025-10-08
+- **Implementation Status**: ✅ Completed
 
-## 功能实现清单
+## Feature Implementation Checklist
 
-### ✅ 已完成功能
+### ✅ Completed Features
 
-#### P0 核心功能
-- [x] 单个视频下载
-- [x] 批量视频下载
-- [x] 用户主页下载
-- [x] Cookie管理（手动配置）
-- [x] 配置文件管理（YAML）
+#### P0 Core Features
+- [x] Single video download
+- [x] Batch video download
+- [x] User homepage download
+- [x] Cookie management (Manual configuration)
+- [x] Configuration file management (YAML)
 
-#### P1 重要功能
-- [x] 图集下载支持
-- [x] 元数据保存（JSON）
-- [x] 增量下载机制
-- [x] 数据库记录（SQLite）
-- [x] 文件组织管理
+#### P1 Important Features
+- [x] Image gallery download support
+- [x] Metadata saving (JSON)
+- [x] Incremental download mechanism
+- [x] Database recording (SQLite)
+- [x] File organization management
 
-#### P2 优化功能
-- [x] 智能重试机制
-- [x] 速率限制器
-- [x] 并发下载控制
-- [x] 进度显示（Rich）
-- [x] 日志系统
+#### P2 Optimization Features
+- [x] Smart retry mechanism
+- [x] Rate limiter
+- [x] Concurrent download control
+- [x] Progress display (Rich)
+- [x] Logging system
 
-#### P3 扩展功能
-- [x] 时间范围过滤
-- [x] 数量限制
-- [x] 命令行参数支持
-- [x] 环境变量支持
+#### P3 Extended Features
+- [x] Time range filtering
+- [x] Quantity limits
+- [x] Command line argument support
+- [x] Environment variable support
 
-## 技术架构
+## Technical Architecture
 
-### 分层架构设计
+### Layered Architecture Design
 
 ```
 dy-downloader/
-├── core/               # 核心业务层
-│   ├── api_client.py           # API客户端
-│   ├── url_parser.py           # URL解析器
-│   ├── downloader_base.py      # 下载器基类
-│   ├── video_downloader.py     # 视频下载器
-│   ├── user_downloader.py      # 用户下载器
-│   └── downloader_factory.py   # 下载器工厂
+├── core/               # Core business layer
+│   ├── api_client.py           # API Client
+│   ├── url_parser.py           # URL Parser
+│   ├── downloader_base.py      # Downloader Base Class
+│   ├── video_downloader.py     # Video Downloader
+│   ├── user_downloader.py      # User Downloader
+│   └── downloader_factory.py   # Downloader Factory
 │
-├── auth/               # 认证层
-│   └── cookie_manager.py       # Cookie管理
+├── auth/               # Authentication layer
+│   └── cookie_manager.py       # Cookie Management
 │
-├── storage/            # 存储层
-│   ├── database.py             # 数据库操作
-│   ├── file_manager.py         # 文件管理
-│   └── metadata_handler.py     # 元数据处理
+├── storage/            # Storage layer
+│   ├── database.py             # Database operations
+│   ├── file_manager.py         # File management
+│   └── metadata_handler.py     # Metadata handling
 │
-├── control/            # 控制层
-│   ├── rate_limiter.py         # 速率限制
-│   ├── retry_handler.py        # 重试管理
-│   └── queue_manager.py        # 队列管理
+├── control/            # Control layer
+│   ├── rate_limiter.py         # Rate limitation
+│   ├── retry_handler.py        # Retry management
+│   └── queue_manager.py        # Queue management
 │
-├── config/             # 配置层
-│   ├── config_loader.py        # 配置加载
-│   └── default_config.py       # 默认配置
+├── config/             # Configuration layer
+│   ├── config_loader.py        # Configuration loading
+│   └── default_config.py       # Default configuration
 │
-├── cli/                # 界面层
-│   ├── main.py                 # 主入口
-│   └── progress_display.py     # 进度显示
+├── cli/                # Interface layer
+│   ├── main.py                 # Main entry point
+│   └── progress_display.py     # Progress display
 │
-└── utils/              # 工具层
-    ├── logger.py               # 日志工具
-    ├── validators.py           # 验证函数
-    └── helpers.py              # 辅助函数
+└── utils/              # Utility layer
+    ├── logger.py               # Logging tool
+    ├── validators.py           # Validation functions
+    └── helpers.py              # Helper functions
 ```
 
-### 技术栈
+### Technical Stack
 
-| 组件 | 技术 | 版本 | 用途 |
+| Component | Technology | Version | Purpose |
 |-----|------|------|------|
-| 异步框架 | asyncio + aiohttp | 3.9.0+ | 高性能并发下载 |
-| 文件IO | aiofiles | 23.2.1+ | 异步文件操作 |
-| 数据库 | aiosqlite | 0.19.0+ | 异步SQLite |
-| CLI界面 | Rich | 13.7.0+ | 美观的终端界面 |
-| 配置 | PyYAML | 6.0.1+ | YAML配置解析 |
-| 时间处理 | python-dateutil | 2.8.2+ | 日期时间工具 |
+| Async Framework | asyncio + aiohttp | 3.9.0+ | High-performance concurrent download |
+| File IO | aiofiles | 23.2.1+ | Async file operations |
+| Database | aiosqlite | 0.19.0+ | Async SQLite |
+| CLI Interface | Rich | 13.7.0+ | Beautiful terminal interface |
+| Configuration | PyYAML | 6.0.1+ | YAML configuration parsing |
+| Time Handling | python-dateutil | 2.8.2+ | Date and time utilities |
 
-## 设计模式应用
+## Design Pattern Applications
 
-### 1. 模板方法模式
-**位置**: `core/downloader_base.py`
+### 1. Template Method Pattern
+**Location**: `core/downloader_base.py`
 
 ```python
 class BaseDownloader(ABC):
     async def download(self, parsed_url):
-        # 定义下载流程模板
-        1. 解析URL
-        2. 获取内容列表
-        3. 过滤和限制
-        4. 并发下载
+        # Define download process template
+        1. Parse URL
+        2. Get content list
+        3. Filter and limit
+        4. Concurrent download
 ```
 
-### 2. 工厂模式
-**位置**: `core/downloader_factory.py`
+### 2. Factory Pattern
+**Location**: `core/downloader_factory.py`
 
-根据URL类型自动创建对应的下载器
+Automatically creates corresponding downloader according to URL type.
 
-### 3. 策略模式
-**位置**: 各个下载器实现
+### 3. Strategy Pattern
+**Location**: Each downloader implementation
 
-不同类型内容使用不同的下载策略
+Different content types use different download strategies.
 
-### 4. 单例模式
-**位置**: `utils/logger.py`
+### 4. Singleton Pattern
+**Location**: `utils/logger.py`
 
-日志器确保全局唯一实例
+Logger ensures a globally unique instance.
 
-## 核心功能说明
+## Core Feature Descriptions
 
-### 1. 配置管理
+### 1. Configuration Management
 
-**多层配置优先级**:
+**Multi-layer Priority**:
 ```
-命令行参数 > 环境变量 > 配置文件 > 默认配置
+Command line arguments > Environment variables > Configuration file > Default configuration
 ```
 
-**配置文件示例**:
+**Configuration File Example**:
 ```yaml
 link:
   - https://www.douyin.com/user/xxxxx
@@ -147,15 +147,15 @@ number:
 database: true
 ```
 
-### 2. Cookie管理
+### 2. Cookie Management
 
-- JSON格式本地存储
-- 自动验证必需字段
-- 支持多种配置方式
+- Local storage in JSON format
+- Automatic verification of required fields
+- Support for multiple configuration methods
 
-### 3. 数据库设计
+### 3. Database Design
 
-**aweme表** - 作品记录
+**aweme table** - Work records
 ```sql
 CREATE TABLE aweme (
     id INTEGER PRIMARY KEY,
@@ -171,7 +171,7 @@ CREATE TABLE aweme (
 )
 ```
 
-**download_history表** - 下载历史
+**download_history table** - Download history
 ```sql
 CREATE TABLE download_history (
     id INTEGER PRIMARY KEY,
@@ -184,28 +184,28 @@ CREATE TABLE download_history (
 )
 ```
 
-### 4. 下载流程
+### 4. Download Process
 
 ```
-1. 配置加载
+1. Configuration loading
    ↓
-2. Cookie初始化
+2. Cookie initialization
    ↓
-3. URL解析
+3. URL parsing
    ↓
-4. 创建下载器
+4. Create downloader
    ↓
-5. 获取内容列表
+5. Get content list
    ↓
-6. 应用过滤规则
+6. Apply filter rules
    ↓
-7. 并发下载
+7. Concurrent download
    ↓
-8. 保存文件
+8. Save files
    ↓
-9. 更新数据库
+9. Update database
    ↓
-10. 显示结果
+10. Display results
 ```
 
 ### 5. 文件组织

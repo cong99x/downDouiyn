@@ -1,33 +1,33 @@
 #######################################
-# 抖音下载器 配置示例（简洁版）
-# 仅保留最常用的选项，默认即可使用
+# Douyin Downloader Configuration Example (Simple Version)
+# Contains only the most common options, works with default settings
 #######################################
 
-# 支持多个链接（视频或图文、也可放主页链接做批量）
+# Supports multiple links (video, photo series, or user homepage for batch download)
 link:
   - https://v.douyin.com/EXAMPLE1/
   - https://www.douyin.com/video/1234567890123456789
 
-# 保存目录
+# Save directory
 path: ./Downloaded/
 
-# 下载选项（可选，均默认为 true）
-music: true   # 下载音乐
-cover: true   # 下载封面
-json: true    # 保存元数据JSON
+# Download options (optional, all default to true)
+music: true   # Download music
+cover: true   # Download cover
+json: true    # Save metadata JSON
 
-# 时间过滤（可选，留空表示不过滤）。格式：YYYY-MM-DD
+# Time filtering (optional, leave empty for no filtering). Format: YYYY-MM-DD
 start_time: ""
 end_time: ""
 
-# Cookie 配置（三选一，按优先级从上到下）
-# 1) 自动获取（需要已安装 Playwright：pip install playwright && playwright install）
+# Cookie Configuration (Choose one of the three, in order of priority)
+# 1) Auto-acquire (Requires Playwright: pip install playwright && playwright install)
 cookies: auto
 
-# 2) 直接粘贴整串 Cookie 字符串（示例，使用时请注释掉上面的 cookies: auto）
+# 2) Directly paste the entire Cookie string (Example, comment out cookies: auto when using)
 # cookies: "msToken=YOUR_MS_TOKEN; ttwid=YOUR_TTWID; odin_tt=YOUR_ODIN_TT; ...;"
 
-# 3) 以键值对方式提供（示例，使用时请注释掉上面的 cookies）
+# 3) Provide as key-value pairs (Example, comment out the above cookies when using)
 # cookies:
 #   msToken: YOUR_MS_TOKEN
 #   ttwid: YOUR_TTWID
@@ -35,7 +35,17 @@ cookies: auto
 #   passport_csrf_token: YOUR_PASSPORT_CSRF_TOKEN
 #   sid_guard: YOUR_SID_GUARD
 
-# 主页下载模式（仅当 link 是用户主页时生效，可选：post/like；默认 post）
+# Homepage download mode (Only effective when link is a user homepage, options: post/like; default: post)
 # mode:
 #   - post
 
+# AWS S3 Configuration (Optional)
+# If enabled, downloaded files will be automatically uploaded to the specified S3 bucket
+aws:
+  enabled: false
+  access_key_id: "YOUR_AWS_ACCESS_KEY_ID"
+  secret_access_key: "YOUR_AWS_SECRET_ACCESS_KEY"
+  region: "us-east-1"
+  bucket_name: "your-bucket-name"
+  prefix: "douyin-downloads" # Optional folder prefix in S3 bucket
+  endpoint_url: "" # Optional: Custom endpoint URL for S3-compatible storage (e.g., MinIO: http://localhost:9000)

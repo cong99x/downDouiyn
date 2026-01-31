@@ -1,91 +1,91 @@
-# 抖音下载器 - 无水印批量下载工具
+# Douyin Downloader - No Watermark Batch Download Tool
 
-![douyin-downloader](https://socialify.git.ci/jiji262/douyin-downloader/image?custom_description=%E6%8A%96%E9%9F%B3%E6%89%B9%E9%87%8F%E4%B8%8B%E8%BD%BD%E5%B7%A5%E5%85%B7%EF%BC%8C%E5%8E%BB%E6%B0%B4%E5%8D%B0%EF%BC%8C%E6%94%AF%E6%8C%81%E8%A7%86%E9%A2%91%E3%80%81%E5%9B%BE%E9%9B%86%E3%80%81%E5%90%88%E9%9B%86%E3%80%81%E9%9F%B3%E4%B9%90%28%E5%8E%9F%E5%A3%B0%29%E3%80%82%0A%E5%85%8D%E8%B4%B9%EF%BC%81%E5%85%8D%E8%B4%B9%EF%BC%81%E5%85%8D%E8%B4%B9%EF%BC%81&description=1&font=Jost&forks=1&logo=https%3A%2F%2Fraw.githubusercontent.com%2Fjiji262%2Fdouyin-downloader%2Frefs%2Fheads%2Fmain%2Fimg%2Flogo.png&name=1&owner=1&pattern=Circuit+Board&pulls=1&stargazers=1&theme=Light)
+![douyin-downloader](https://socialify.git.ci/jiji262/douyin-downloader/image?custom_description=Douyin%20batch%20download%20tool,%20remove%20watermark,%20supports%20video,%20images,%20collections,%20music%20(original%20sound).%20Free!%20Free!%20Free!&description=1&font=Jost&forks=1&logo=https%3A%2F%2Fraw.githubusercontent.com%2Fjiji262%2Fdouyin-downloader%2Frefs%2Fheads%2Fmain%2Fimg%2Flogo.png&name=1&owner=1&pattern=Circuit+Board&pulls=1&stargazers=1&theme=Light)
 
-一个功能强大的抖音内容批量下载工具，支持视频、图集、音乐、直播等多种内容类型的下载。提供两个版本：V1.0（稳定版）和 V2.0（增强版）。
+A powerful Douyin content batch download tool that supports videos, images, music, live streams, and more. Provides two versions: V1.0 (Stable) and V2.0 (Enhanced).
 
-## 📋 目录
+## 📋 Table of Contents
 
-- [快速开始](#-快速开始)
-- [版本说明](#-版本说明)
-- [V1.0 使用指南](#-v10-使用指南)
-- [V2.0 使用指南](#-v20-使用指南)
-- [Cookie 配置工具](#-cookie-配置工具)
-- [支持的链接类型](#-支持的链接类型)
-- [常见问题](#-常见问题)
-- [更新日志](#-更新日志)
+- [Quick Start](#-quick-start)
+- [Version Description](#-version-description)
+- [V1.0 User Guide](#-v10-user-guide)
+- [V2.0 User Guide](#-v20-user-guide)
+- [Cookie Configuration Tool](#-cookie-configuration-tool)
+- [Supported Link Types](#-supported-link-types)
+- [Frequently Asked Questions](#-frequently-asked-questions)
+- [Update Log](#-update-log)
 
-## ⚡ 快速开始
+## ⚡ Quick Start
 
 ![qun](./img/fuye.jpg)
 
-### 环境要求
+### Environment Requirements
 
 - **Python 3.9+**
-- **操作系统**：Windows、macOS、Linux
+- **Operating System**: Windows, macOS, Linux
 
-### 安装步骤
+### Installation Steps
 
-1. **克隆项目**
+1. **Clone the Project**
 ```bash
 git clone https://github.com/jiji262/douyin-downloader.git
 cd douyin-downloader
 ```
 
-2. **安装依赖**
+2. **Install Dependencies**
 ```bash
 pip install -r requirements.txt
 ```
 
-3. **配置 Cookie**（首次使用需要）
+3. **Configure Cookie** (Required for first use)
 ```bash
-# 方式1：自动获取（推荐）
+# Method 1: Automatic acquisition (Recommended)
 python cookie_extractor.py
 
-# 方式2：手动获取
+# Method 2: Manual acquisition
 python get_cookies_manual.py
 ```
 
-## 📦 版本说明
+## 📦 Version Description
 
-### V1.0 (DouYinCommand.py) - 稳定版
-- ✅ **经过验证**：稳定可靠，经过大量测试
-- ✅ **简单易用**：配置文件驱动，使用简单
-- ✅ **功能完整**：支持所有内容类型下载
-- ✅ **单个视频下载**：完全正常工作
-- ⚠️ **需要手动配置**：需要手动获取和配置 Cookie
+### V1.0 (DouYinCommand.py) - Stable Version
+- ✅ **Verified**: Stable and reliable, extensively tested
+- ✅ **Easy to Use**: Driven by configuration files, simple to operate
+- ✅ **Full-Featured**: Supports downloading all content types
+- ✅ **Single Video Download**: Fully functional
+- ⚠️ **Manual Configuration Required**: Requires manual acquisition and configuration of Cookies
 
-### V2.0 (downloader.py) - 增强版
-- 🚀 **自动 Cookie 管理**：支持自动获取和刷新 Cookie
-- 🚀 **统一入口**：整合所有功能到单一脚本
-- 🚀 **异步架构**：性能更优，支持并发下载
-- 🚀 **智能重试**：自动重试和错误恢复
-- 🚀 **增量下载**：支持增量更新，避免重复下载
-- ⚠️ **单个视频下载**：目前 API 返回空响应（已知问题）
-- ✅ **用户主页下载**：完全正常工作
+### V2.0 (downloader.py) - Enhanced Version
+- 🚀 **Automatic Cookie Management**: Supports auto-acquisition and refreshing of Cookies
+- 🚀 **Unified Entry**: Integrates all functions into a single script
+- 🚀 **Asynchronous Architecture**: Better performance, supports concurrent downloads
+- 🚀 **Smart Retry**: Automatic retry and error recovery
+- 🚀 **Incremental Download**: Supports incremental updates to avoid repeated downloads
+- ⚠️ **Single Video Download**: Currently API returns empty response (known issue)
+- ✅ **User Homepage Download**: Fully functional
 
-## 🎯 V1.0 使用指南
+## 🎯 V1.0 User Guide
 
-### 配置文件设置
+### Configuration Settings
 
-1. **编辑配置文件**
+1. **Edit Configuration File**
 ```bash
 cp config.example.yml config.yml
-# 编辑 config.yml 文件
+# Edit config.yml file
 ```
 
-2. **配置示例**
+2. **Configuration Example**
 ```yaml
-# 下载链接
+# Download links
 link:
-  - https://v.douyin.com/xxxxx/                    # 单个视频
-  - https://www.douyin.com/user/xxxxx              # 用户主页
-  - https://www.douyin.com/collection/xxxxx        # 合集
+  - https://v.douyin.com/xxxxx/                    # Single video
+  - https://www.douyin.com/user/xxxxx              # User homepage
+  - https://www.douyin.com/collection/xxxxx        # Collection
 
-# 保存路径
+# Save path
 path: ./Downloaded/
 
-# Cookie配置（必填）
+# Cookie configuration (Required)
 cookies:
   msToken: YOUR_MS_TOKEN_HERE
   ttwid: YOUR_TTWID_HERE
@@ -93,310 +93,310 @@ cookies:
   passport_csrf_token: YOUR_PASSPORT_CSRF_TOKEN_HERE
   sid_guard: YOUR_SID_GUARD_HERE
 
-# 下载选项
-music: True    # 下载音乐
-cover: True    # 下载封面
-avatar: True   # 下载头像
-json: True     # 保存JSON数据
+# Download options
+music: True    # Download music
+cover: True    # Download cover
+avatar: True   # Download avatar
+json: True     # Save JSON data
 
-# 下载模式
+# Download mode
 mode:
-  - post       # 下载发布的作品
-  # - like     # 下载喜欢的作品
-  # - mix      # 下载合集
+  - post       # Download published works
+  # - like     # Download liked works
+  # - mix      # Download collections
 
-# 下载数量（0表示全部）
+# Download quantity (0 for all)
 number:
-  post: 0      # 发布作品数量
-  like: 0      # 喜欢作品数量
-  allmix: 0    # 合集数量
-  mix: 0       # 单个合集内作品数量
+  post: 0      # Number of posts
+  like: 0      # Number of likes
+  allmix: 0    # Number of collections
+  mix: 0       # Number of works within a single collection
 
-# 其他设置
-thread: 5      # 下载线程数
-database: True # 使用数据库记录
+# Other settings
+thread: 5      # Number of download threads
+database: True # Use database recording
 ```
 
-### 运行程序
+### Running the Program
 
 ```bash
-# 使用配置文件运行
+# Run using configuration file
 python DouYinCommand.py
 
-# 或者使用命令行参数
+# Or use command line arguments
 python DouYinCommand.py --cmd False
 ```
 
-### 使用示例
+### Usage Examples
 
 ```bash
-# 下载单个视频
-# 在 config.yml 中设置 link 为单个视频链接
+# Download a single video
+# Set link to a single video URL in config.yml
 python DouYinCommand.py
 
-# 下载用户主页
-# 在 config.yml 中设置 link 为用户主页链接
+# Download user homepage
+# Set link to a user homepage URL in config.yml
 python DouYinCommand.py
 
-# 下载合集
-# 在 config.yml 中设置 link 为合集链接
+# Download collection
+# Set link to a collection URL in config.yml
 python DouYinCommand.py
 ```
 
-## 🚀 V2.0 使用指南
+## 🚀 V2.0 User Guide
 
-### 命令行使用
+### Command Line Usage
 
 ```bash
-# 下载单个视频（需要先配置 Cookie）
+# Download a single video (Requires pre-configured Cookie)
 python downloader.py -u "https://v.douyin.com/xxxxx/"
 
-# 下载用户主页（推荐）
+# Download user homepage (Recommended)
 python downloader.py -u "https://www.douyin.com/user/xxxxx"
 
-# 自动获取 Cookie 并下载
+# Automatically get Cookie and download
 python downloader.py --auto-cookie -u "https://www.douyin.com/user/xxxxx"
 
-# 指定保存路径
-python downloader.py -u "链接" --path "./my_videos/"
+# Specify save path
+python downloader.py -u "LINK" --path "./my_videos/"
 
-# 使用配置文件
+# Use configuration file
 python downloader.py --config
 ```
 
-### 配置文件使用
+### Configuration File Usage
 
-1. **创建配置文件**
+1. **Create Configuration File**
 ```bash
 cp config.example.yml config_simple.yml
 ```
 
-2. **配置示例**
+2. **Configuration Example**
 ```yaml
-# 下载链接
+# Download links
 link:
   - https://www.douyin.com/user/xxxxx
 
-# 保存路径
+# Save path
 path: ./Downloaded/
 
-# 自动 Cookie 管理
+# Automatic Cookie management
 auto_cookie: true
 
-# 下载选项
+# Download options
 music: true
 cover: true
 avatar: true
 json: true
 
-# 下载模式
+# Download mode
 mode:
   - post
 
-# 下载数量
+# Download quantity
 number:
   post: 10
 
-# 增量下载
+# Incremental download
 increase:
   post: false
 
-# 数据库
+# Database
 database: true
 ```
 
-3. **运行程序**
+3. **Run the Program**
 ```bash
 python downloader.py --config
 ```
 
-### 命令行参数
+### Command Line Arguments
 
 ```bash
-python downloader.py [选项] [链接...]
+python downloader.py [options] [links...]
 
-选项：
-  -u, --url URL          下载链接
-  -p, --path PATH        保存路径
-  -c, --config           使用配置文件
-  --auto-cookie          自动获取 Cookie
-  --cookies COOKIES      手动指定 Cookie
-  -h, --help            显示帮助信息
+Options:
+  -u, --url URL          Download link
+  -p, --path PATH        Save path
+  -c, --config           Use configuration file
+  --auto-cookie          Automatically get Cookie
+  --cookies COOKIES      Manually specify Cookie
+  -h, --help            Show help information
 ```
 
-## 🍪 Cookie 配置工具
+## 🍪 Cookie Configuration Tool
 
-### 1. cookie_extractor.py - 自动获取工具
+### 1. cookie_extractor.py - Automatic Acquisition Tool
 
-**功能**：使用 Playwright 自动打开浏览器，自动获取 Cookie
+**Function**: Uses Playwright to automatically open the browser and acquire Cookies.
 
-**使用方式**：
+**Usage**:
 ```bash
-# 安装 Playwright
+# Install Playwright
 pip install playwright
 playwright install chromium
 
-# 运行自动获取
+# Run automatic acquisition
 python cookie_extractor.py
 ```
 
-**特点**：
-- ✅ 自动打开浏览器
-- ✅ 支持扫码登录
-- ✅ 自动检测登录状态
-- ✅ 自动保存到配置文件
-- ✅ 支持多种登录方式
+**Features**:
+- ✅ Automatically opens browser
+- ✅ Supports QR code login
+- ✅ Automatically detects login status
+- ✅ Automatically saves to configuration file
+- ✅ Supports multiple login methods
 
-**使用步骤**：
-1. 运行 `python cookie_extractor.py`
-2. 选择提取方式（推荐选择1）
-3. 在打开的浏览器中完成登录
-4. 程序自动提取并保存 Cookie
+**Steps**:
+1. Run `python cookie_extractor.py`
+2. Select extraction method (Option 1 recommended)
+3. Complete login in the opened browser
+4. Program automatically extracts and saves Cookie
 
-### 2. get_cookies_manual.py - 手动获取工具
+### 2. get_cookies_manual.py - Manual Acquisition Tool
 
-**功能**：通过浏览器开发者工具手动获取 Cookie
+**Function**: Manually acquire Cookies through browser developer tools.
 
-**使用方式**：
+**Usage**:
 ```bash
 python get_cookies_manual.py
 ```
 
-**特点**：
-- ✅ 无需安装 Playwright
-- ✅ 详细的操作教程
-- ✅ 支持 Cookie 验证
-- ✅ 自动保存到配置文件
-- ✅ 支持备份和恢复
+**Features**:
+- ✅ No Playwright installation required
+- ✅ Detailed operation tutorial
+- ✅ Supports Cookie validation
+- ✅ Automatically saves to configuration file
+- ✅ Supports backup and recovery
 
-**使用步骤**：
-1. 运行 `python get_cookies_manual.py`
-2. 选择"获取新的Cookie"
-3. 按照教程在浏览器中获取 Cookie
-4. 粘贴 Cookie 内容
-5. 程序自动解析并保存
+**Steps**:
+1. Run `python get_cookies_manual.py`
+2. Select "Get New Cookie"
+3. Follow the tutorial to get Cookie in the browser
+4. Paste the Cookie content
+5. Program automatically parses and saves
 
-### Cookie 获取教程
+### Cookie Acquisition Tutorial
 
-#### 方法一：浏览器开发者工具
+#### Method 1: Browser Developer Tools
 
-1. 打开浏览器，访问 [抖音网页版](https://www.douyin.com)
-2. 登录你的抖音账号
-3. 按 `F12` 打开开发者工具
-4. 切换到 `Network` 标签页
-5. 刷新页面，找到任意请求
-6. 在请求头中找到 `Cookie` 字段
-7. 复制以下关键 cookie 值：
+1. Open browser, visit [Douyin Web Version](https://www.douyin.com)
+2. Log in to your Douyin account
+3. Press `F12` to open developer tools
+4. Switch to the `Network` tab
+5. Refresh the page, find any request
+6. Find the `Cookie` field in the request header
+7. Copy the following key cookie values:
    - `msToken`
    - `ttwid`
    - `odin_tt`
    - `passport_csrf_token`
    - `sid_guard`
 
-#### 方法二：使用自动工具
+#### Method 2: Use Automatic Tool
 
 ```bash
-# 推荐使用自动工具
+# Recommended to use the automatic tool
 python cookie_extractor.py
 ```
 
-## 📋 支持的链接类型
+## 📋 Supported Link Types
 
-### 🎬 视频内容
-- **单个视频分享链接**：`https://v.douyin.com/xxxxx/`
-- **单个视频直链**：`https://www.douyin.com/video/xxxxx`
-- **图集作品**：`https://www.douyin.com/note/xxxxx`
+### 🎬 Video Content
+- **Single Video Share Link**: `https://v.douyin.com/xxxxx/`
+- **Single Video Direct Link**: `https://www.douyin.com/video/xxxxx`
+- **Image Collection (Note)**: `https://www.douyin.com/note/xxxxx`
 
-### 👤 用户内容
-- **用户主页**：`https://www.douyin.com/user/xxxxx`
-  - 支持下载用户发布的所有作品
-  - 支持下载用户喜欢的作品（需要权限）
+### 👤 User Content
+- **User Homepage**: `https://www.douyin.com/user/xxxxx`
+  - Supports downloading all posts by the user
+  - Supports downloading works liked by the user (permissions required)
 
-### 📚 合集内容
-- **用户合集**：`https://www.douyin.com/collection/xxxxx`
-- **音乐合集**：`https://www.douyin.com/music/xxxxx`
+### 📚 Collection Content
+- **User Collections**: `https://www.douyin.com/collection/xxxxx`
+- **Music Collections**: `https://www.douyin.com/music/xxxxx`
 
-### 🔴 直播内容
-- **直播间**：`https://live.douyin.com/xxxxx`
+### 🔴 Live Content
+- **Live Room**: `https://live.douyin.com/xxxxx`
 
-## 🔧 常见问题
+## 🔧 Frequently Asked Questions
 
-### Q: 为什么单个视频下载失败？
+### Q: Why did single video download fail?
 **A**: 
-- V1.0：请检查 Cookie 是否有效，确保包含必要的字段
-- V2.0：目前已知问题，API 返回空响应，建议使用用户主页下载
+- V1.0: Please check if the Cookie is valid and ensures it contains necessary fields.
+- V2.0: Known issue, API returns empty response, recommended to use user homepage download.
 
-### Q: Cookie 过期怎么办？
+### Q: What if the Cookie expires?
 **A**: 
-- 使用 `python cookie_extractor.py` 重新获取
-- 或使用 `python get_cookies_manual.py` 手动获取
+- Use `python cookie_extractor.py` to re-acquire.
+- Or use `python get_cookies_manual.py` for manual acquisition.
 
-### Q: 下载速度慢怎么办？
+### Q: What if download speed is slow?
 **A**: 
-- 调整 `thread` 参数增加并发数
-- 检查网络连接
-- 避免同时下载过多内容
+- Adjust the `thread` parameter to increase concurrency.
+- Check your network connection.
+- Avoid downloading too much content at once.
 
-### Q: 如何批量下载？
+### Q: How to batch download?
 **A**: 
-- V1.0：在 `config.yml` 中添加多个链接
-- V2.0：使用命令行传入多个链接或使用配置文件
+- V1.0: Add multiple links in `config.yml`.
+- V2.0: Pass multiple links via command line or use a configuration file.
 
-### Q: 支持哪些格式？
+### Q: What formats are supported?
 **A**: 
-- 视频：MP4 格式（无水印）
-- 图片：JPG 格式
-- 音频：MP3 格式
-- 数据：JSON 格式
+- Video: MP4 format (No watermark)
+- Image: JPG format
+- Audio: MP3 format
+- Data: JSON format
 
-## 📝 更新日志
+## 📝 Update Log
 
 ### V2.0 (2025-08)
-- ✅ **统一入口**：整合所有功能到 `downloader.py`
-- ✅ **自动 Cookie 管理**：支持自动获取和刷新
-- ✅ **异步架构**：性能优化，支持并发下载
-- ✅ **智能重试**：自动重试和错误恢复
-- ✅ **增量下载**：支持增量更新
-- ✅ **用户主页下载**：完全正常工作
-- ⚠️ **单个视频下载**：API 返回空响应（已知问题）
+- ✅ **Unified Entry**: Integrated all functions into `downloader.py`
+- ✅ **Automatic Cookie Management**: Supports auto-acquisition and refreshing
+- ✅ **Asynchronous Architecture**: Performance optimization, supports concurrent downloads
+- ✅ **Smart Retry**: Automatic retry and error recovery
+- ✅ **Incremental Download**: Supports incremental updates
+- ✅ **User Homepage Download**: Fully functional
+- ⚠️ **Single Video Download**: API returns empty response (known issue)
 
 ### V1.0 (2024-12)
-- ✅ **稳定可靠**：经过大量测试验证
-- ✅ **功能完整**：支持所有内容类型
-- ✅ **单个视频下载**：完全正常工作
-- ✅ **配置文件驱动**：简单易用
-- ✅ **数据库支持**：记录下载历史
+- ✅ **Stable and Reliable**: Extensively tested and verified
+- ✅ **Full-Featured**: Supports all content types
+- ✅ **Single Video Download**: Fully functional
+- ✅ **Configuration Driven**: Easy to use
+- ✅ **Database Support**: Records download history
 
-## ⚖️ 法律声明
+## ⚖️ Legal Disclaimer
 
-- 本项目仅供**学习交流**使用
-- 请遵守相关法律法规和平台服务条款
-- 不得用于商业用途或侵犯他人权益
-- 下载内容请尊重原作者版权
+- This project is for **learning and exchange** purposes only.
+- Please comply with relevant laws, regulations, and platform terms of service.
+- Not for commercial use or infringing on the rights of others.
+- Please respect the original author's copyright for downloaded content.
 
-## 🤝 贡献指南
+## 🤝 Contribution Guide
 
-欢迎提交 Issue 和 Pull Request！
+Issues and Pull Requests are welcome!
 
-### 报告问题
-- 使用 [Issues](https://github.com/jiji262/douyin-downloader/issues) 报告 bug
-- 请提供详细的错误信息和复现步骤
+### Reporting Issues
+- Use [Issues](https://github.com/jiji262/douyin-downloader/issues) to report bugs.
+- Please provide detailed error information and reproduction steps.
 
-### 功能建议
-- 在 Issues 中提出新功能建议
-- 详细描述功能需求和使用场景
+### Feature Suggestions
+- Propose new feature suggestions in Issues.
+- Describe functional requirements and use scenarios in detail.
 
-## 📄 许可证
+## 📄 License
 
-本项目采用 [MIT License](LICENSE) 开源许可证。
+This project is licensed under the [MIT License](LICENSE).
 
 ---
 
 <div align="center">
 
-**如果这个项目对你有帮助，请给个 ⭐ Star 支持一下！**
+**If this project helps you, please give it a ⭐ Star!**
 
-[🐛 报告问题](https://github.com/jiji262/douyin-downloader/issues) • [💡 功能建议](https://github.com/jiji262/douyin-downloader/issues) • [📖 查看文档](https://github.com/jiji262/douyin-downloader/wiki)
+[🐛 Report Issue](https://github.com/jiji262/douyin-downloader/issues) • [💡 Feature Suggestion](https://github.com/jiji262/douyin-downloader/issues) • [📖 View Documentation](https://github.com/jiji262/douyin-downloader/wiki)
 
 Made with ❤️ by [jiji262](https://github.com/jiji262)
 

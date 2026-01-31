@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-抖音Cookie获取助手（手动版）
-无需安装Playwright，通过浏览器开发者工具手动获取
+Douyin Cookie Extraction Assistant (Manual Version)
+No Playwright required, manually obtain via browser developer tools
 """
 
 import json
@@ -14,38 +14,38 @@ from datetime import datetime
 from typing import Dict
 
 def print_instructions():
-    """打印获取Cookie的详细说明"""
+    """Print detailed instructions for obtaining Cookies"""
     print("\n" + "="*60)
-    print("抖音Cookie获取教程")
+    print("Douyin Cookie Extraction Tutorial")
     print("="*60)
-    print("\n📝 获取步骤：\n")
-    print("1. 打开浏览器（推荐Chrome/Edge）")
-    print("2. 访问抖音网页版：https://www.douyin.com")
-    print("3. 登录您的账号（扫码/手机号/第三方登录）")
-    print("4. 登录成功后，按 F12 打开开发者工具")
-    print("5. 切换到 Network（网络）标签")
-    print("6. 刷新页面（F5）")
-    print("7. 在请求列表中找到任意一个 douyin.com 的请求")
-    print("8. 点击该请求，在右侧找到 Request Headers（请求标头）")
-    print("9. 找到 Cookie 字段，复制整个Cookie值")
+    print("\n📝 Steps:\n")
+    print("1. Open a browser (Chrome/Edge recommended)")
+    print("2. Visit Douyin web version: https://www.douyin.com")
+    print("3. Log into your account (QR Code/Phone/Third-party login)")
+    print("4. After successful login, press F12 to open developer tools")
+    print("5. Switch to the Network tab")
+    print("6. Refresh the page (F5)")
+    print("7. Find any request for douyin.com in the request list")
+    print("8. Click the request and find Request Headers on the right")
+    print("9. Find the Cookie field and copy the entire Cookie value")
     print("\n" + "="*60)
     
-    print("\n⚠️ 重要提示：")
-    print("• Cookie包含您的登录信息，请勿分享给他人")
-    print("• Cookie有效期通常为7-30天，过期需重新获取")
-    print("• 建议定期更新Cookie以保证下载成功率")
+    print("\n⚠️ Important Tips:")
+    print("• Cookies contain your login info, do not share with others")
+    print("• Cookies usually last 7-30 days; obtain new ones if they expire")
+    print("• Recommended to update Cookies regularly for download success")
     print("\n" + "="*60)
 
 def parse_cookie_string(cookie_str: str) -> Dict[str, str]:
-    """解析Cookie字符串为字典"""
+    """Parse Cookie string into a dictionary"""
     cookies = {}
     
-    # 清理输入
+    # Clean input
     cookie_str = cookie_str.strip()
     if cookie_str.startswith('"') and cookie_str.endswith('"'):
         cookie_str = cookie_str[1:-1]
     
-    # 分割Cookie
+    # Split Cookies
     for item in cookie_str.split(';'):
         item = item.strip()
         if '=' in item:
@@ -55,58 +55,58 @@ def parse_cookie_string(cookie_str: str) -> Dict[str, str]:
     return cookies
 
 def validate_cookies(cookies: Dict[str, str]) -> bool:
-    """验证Cookie是否包含必要字段"""
-    # 必要的Cookie字段
-    required_fields = ['ttwid']  # 最少需要ttwid
+    """Validate if Cookies contain necessary fields"""
+    # Necessary Cookie fields
+    required_fields = ['ttwid']  # ttwid is the bare minimum
     important_fields = ['sessionid', 'sessionid_ss', 'passport_csrf_token', 'msToken']
     
-    # 检查必要字段
+    # Check necessary fields
     missing_required = []
     for field in required_fields:
         if field not in cookies:
             missing_required.append(field)
     
     if missing_required:
-        print(f"\n❌ 缺少必要的Cookie字段: {', '.join(missing_required)}")
+        print(f"\n❌ Missing required Cookie fields: {', '.join(missing_required)}")
         return False
     
-    # 检查重要字段
+    # Check important fields
     missing_important = []
     for field in important_fields:
         if field not in cookies:
             missing_important.append(field)
     
     if missing_important:
-        print(f"\n⚠️ 缺少部分重要Cookie字段: {', '.join(missing_important)}")
-        print("可能会影响某些功能，但可以尝试使用")
+        print(f"\n⚠️ Missing some important Cookie fields: {', '.join(missing_important)}")
+        print("This might affect some features, but you can try using it")
     
     return True
 
 def save_cookies(cookies: Dict[str, str], config_path: str = "config_simple.yml"):
-    """保存Cookie到配置文件"""
-    # 读取现有配置
+    """Save Cookies to configuration file"""
+    # Read existing configuration
     if os.path.exists(config_path):
         with open(config_path, 'r', encoding='utf-8') as f:
             config = yaml.safe_load(f) or {}
     else:
         config = {}
     
-    # 更新Cookie配置
+    # Update Cookie configuration
     config['cookies'] = cookies
     
-    # 保存配置
+    # Save configuration
     with open(config_path, 'w', encoding='utf-8') as f:
         yaml.dump(config, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
     
-    print(f"\n✅ Cookie已保存到 {config_path}")
+    print(f"\n✅ Cookies saved to {config_path}")
     
-    # 同时保存完整Cookie字符串
+    # Simultaneously save full Cookie string
     cookie_string = '; '.join([f'{k}={v}' for k, v in cookies.items()])
     with open('cookies.txt', 'w', encoding='utf-8') as f:
         f.write(cookie_string)
-    print(f"✅ 完整Cookie字符串已保存到 cookies.txt")
+    print(f"✅ Full Cookie string saved to cookies.txt")
     
-    # 保存带时间戳的备份
+    # Save a timestamped backup
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     backup_file = f'cookies_backup_{timestamp}.json'
     with open(backup_file, 'w', encoding='utf-8') as f:
@@ -114,12 +114,12 @@ def save_cookies(cookies: Dict[str, str], config_path: str = "config_simple.yml"
             'cookies': cookies,
             'cookie_string': cookie_string,
             'timestamp': timestamp,
-            'note': '抖音Cookie备份'
+            'note': 'Douyin Cookie Backup'
         }, f, ensure_ascii=False, indent=2)
-    print(f"✅ Cookie备份已保存到 {backup_file}")
+    print(f"✅ Cookie backup saved to {backup_file}")
 
 def load_existing_cookies(config_path: str = "config_simple.yml") -> Dict[str, str]:
-    """加载现有的Cookie"""
+    """Load existing Cookies"""
     if os.path.exists(config_path):
         with open(config_path, 'r', encoding='utf-8') as f:
             config = yaml.safe_load(f) or {}
@@ -127,28 +127,28 @@ def load_existing_cookies(config_path: str = "config_simple.yml") -> Dict[str, s
     return {}
 
 def main():
-    """主函数"""
-    print("\n🍪 抖音Cookie配置助手")
+    """Main function"""
+    print("\n🍪 Douyin Cookie Configuration Assistant")
     print("-" * 40)
     
-    # 显示选项
-    print("\n请选择操作：")
-    print("1. 获取新的Cookie")
-    print("2. 查看当前Cookie")
-    print("3. 验证Cookie有效性")
-    print("4. 显示获取教程")
+    # Show options
+    print("\nPlease select an operation:")
+    print("1. Obtain new Cookies")
+    print("2. View current Cookies")
+    print("3. Validate Cookie effectiveness")
+    print("4. Show tutorial")
     
-    choice = input("\n请输入选项 (1-4): ").strip()
+    choice = input("\nPlease enter an option (1-4): ").strip()
     
     if choice == '1':
-        # 获取新Cookie
+        # Obtain new Cookies
         print_instructions()
         
-        print("\n请粘贴您复制的Cookie内容：")
-        print("（提示：粘贴后按Enter确认）")
+        print("\nPlease paste the Cookie content you copied:")
+        print("(Tip: Press Enter to confirm after pasting)")
         print("-" * 40)
         
-        # 支持多行输入
+        # Support multi-line input
         lines = []
         while True:
             line = input()
@@ -160,20 +160,20 @@ def main():
         cookie_str = ' '.join(lines)
         
         if not cookie_str:
-            print("\n❌ 未输入Cookie")
+            print("\n❌ No Cookie entered")
             return
         
-        # 解析Cookie
+        # Parse Cookie
         cookies = parse_cookie_string(cookie_str)
         
         if not cookies:
-            print("\n❌ Cookie解析失败，请检查格式")
+            print("\n❌ Cookie parsing failed, please check the format")
             return
         
-        print(f"\n✅ 成功解析 {len(cookies)} 个Cookie字段")
+        print(f"\n✅ Successfully parsed {len(cookies)} Cookie fields")
         
-        # 显示重要Cookie
-        print("\n📋 解析到的关键Cookie：")
+        # Show important Cookies
+        print("\n📋 Extracted key Cookies:")
         important_fields = ['sessionid', 'sessionid_ss', 'ttwid', 'passport_csrf_token', 'msToken']
         for field in important_fields:
             if field in cookies:
@@ -181,45 +181,55 @@ def main():
                 display_value = f"{value[:20]}..." if len(value) > 20 else value
                 print(f"  • {field}: {display_value}")
         
-        # 验证Cookie
+        # Validate Cookies
         if validate_cookies(cookies):
-            # 询问是否保存
-            save_choice = input("\n是否保存Cookie到配置文件？(y/n): ").strip().lower()
+            # Ask whether to save
+            save_choice = input("\nSave Cookies to configuration file? (y/n): ").strip().lower()
             if save_choice == 'y':
                 save_cookies(cookies)
-                print("\n🎉 配置完成！您现在可以运行下载器了：")
+                print("\n🎉 Configuration complete! You can now run the downloader:")
                 print("python3 downloader.py -c config_simple.yml")
             else:
-                print("\n已取消保存")
+                print("\nSave cancelled")
         
     elif choice == '2':
-        # 查看当前Cookie
+        # View current Cookies
         cookies = load_existing_cookies()
         if cookies:
-            print("\n📋 当前配置的Cookie：")
+            print("\n📋 Currently configured Cookies:")
             for key, value in cookies.items():
                 display_value = f"{value[:30]}..." if len(value) > 30 else value
                 print(f"  • {key}: {display_value}")
         else:
-            print("\n❌ 未找到配置的Cookie")
+            print("\n❌ No configured Cookies found")
     
     elif choice == '3':
-        # 验证Cookie
+        # Validate Cookies
         cookies = load_existing_cookies()
         if cookies:
-            print("\n🔍 验证Cookie...")
+            print("\n🔍 Validating Cookies...")
             if validate_cookies(cookies):
-                print("✅ Cookie格式正确")
-                print("\n注意：这只是格式验证，实际是否有效需要测试下载功能")
+                print("✅ Cookie format is correct")
+                print("\nNote: This only validates the format. Effectiveness requires testing the download function.")
         else:
-            print("\n❌ 未找到配置的Cookie")
+            print("\n❌ No configured Cookies found")
     
     elif choice == '4':
-        # 显示教程
+        # Show tutorial
         print_instructions()
     
     else:
-        print("\n❌ 无效的选项")
+        print("\n❌ Invalid option")
+
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\n\n👋 Exited")
+    except Exception as e:
+        print(f"\n❌ An error occurred: {e}")
+        import traceback
+        traceback.print_exc()
 
 if __name__ == '__main__':
     try:

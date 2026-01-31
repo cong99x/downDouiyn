@@ -18,6 +18,13 @@ class Utils(object):
     def __init__(self):
         pass
 
+    @staticmethod
+    def extract_urls(text: str) -> list:
+        """从字符串中提取所有 URL"""
+        # 使用更稳健 natural 的正则匹配 URL
+        pattern = r'https?://[a-zA-Z0-9.\-/_?&%=#:@!+]+'
+        return re.findall(pattern, text)
+
     def replaceStr(self, filenamestr: str):
         """
         替换非法字符，缩短字符长度，使其能成为文件名
@@ -180,6 +187,23 @@ class Utils(object):
             result[i] = ord(b[i]) ^ d[(d[t] + d[c]) % 256]
 
         return result
+
+
+    def find_key(self, obj, key):
+        """递归查找字典中的 key"""
+        if isinstance(obj, dict):
+            if key in obj:
+                return obj[key]
+            for v in obj.values():
+                result = self.find_key(v, key)
+                if result:
+                    return result
+        elif isinstance(obj, list):
+            for item in obj:
+                result = self.find_key(item, key)
+                if result:
+                    return result
+        return None
 
 
 if __name__ == "__main__":

@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-抖音Cookie自动提取器
-使用Playwright自动登录并提取Cookie
+Douyin Cookie Auto-Extractor
+Uses Playwright to automatically log in and extract Cookies
 """
 
 import asyncio
@@ -22,77 +22,77 @@ try:
     from rich.panel import Panel
     from rich import print as rprint
 except ImportError:
-    print("请安装必要的依赖: pip install playwright rich pyyaml")
-    print("并运行: playwright install chromium")
+    print("Please install necessary dependencies: pip install playwright rich pyyaml")
+    print("And run: playwright install chromium")
     sys.exit(1)
 
 console = Console()
 
 
 class CookieExtractor:
-    """Cookie提取器"""
+    """Cookie Extractor"""
     
     def __init__(self, config_path: str = "config_simple.yml"):
         self.config_path = config_path
         self.cookies = {}
         
     async def extract_cookies(self, headless: bool = False) -> Dict:
-        """提取Cookie
+        """Extract Cookies
         
         Args:
-            headless: 是否无头模式运行
+            headless: Whether to run in headless mode
         """
         console.print(Panel.fit(
-            "[bold cyan]抖音Cookie自动提取器[/bold cyan]\n"
-            "[dim]将自动打开浏览器，请在浏览器中完成登录[/dim]",
+            "[bold cyan]Douyin Cookie Auto-Extractor[/bold cyan]\n"
+            "[dim]The browser will open automatically. Please complete the login in the browser.[/dim]",
             border_style="cyan"
         ))
         
         async with async_playwright() as p:
-            # 启动浏览器
+            # Launch browser
             browser = await p.chromium.launch(
                 headless=headless,
                 args=['--disable-blink-features=AutomationControlled']
             )
             
-            # 创建上下文（模拟真实浏览器）
+            # Create context (emulate a real browser)
             context = await browser.new_context(
                 viewport={'width': 1280, 'height': 720},
                 user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
             )
             
-            # 添加初始化脚本（隐藏自动化特征）
+            # Add initialization script (hide automation features)
             await context.add_init_script("""
                 Object.defineProperty(navigator, 'webdriver', {
                     get: () => undefined
                 });
             """)
             
-            # 创建页面
+            # Create page
             page = await context.new_page()
             
             try:
-                # 访问抖音登录页
-                console.print("\n[cyan]正在打开抖音登录页面...[/cyan]")
-                await page.goto('https://www.douyin.com', wait_until='networkidle')
+                # Visit Douyin login page
+                console.print("\n[cyan]Opening Douyin login page...[/cyan]")
+                await page.goto('https://www.douyin.com', wait_until='domcontentloaded', timeout=60000)
                 
-                # 等待用户登录
-                console.print("\n[yellow]请在浏览器中完成登录操作[/yellow]")
-                console.print("[dim]登录方式：[/dim]")
-                console.print("  1. 扫码登录（推荐）")
-                console.print("  2. 手机号登录")
-                console.print("  3. 第三方账号登录")
+                # Wait for user to log in
+                console.print("\n[yellow]Please complete the login in the browser[/yellow]")
+                console.print("[dim]Login methods:[/dim]")
+                console.print("  1. QR Code login (Recommended)")
+                console.print("  2. Phone number login")
+                console.print("  3. Third-party account login")
                 
-                # 等待登录成功的标志
+                # Wait for login success signs
                 logged_in = await self._wait_for_login(page)
                 
                 if logged_in:
-                    console.print("\n[green]✅ 登录成功！正在提取Cookie...[/green]")
+                    console.print("\n[green]✅ Login successful! Extracting Cookies...[/green]")
                     
-                    # 提取Cookie
+                    # Extract Cookies
                     cookies = await context.cookies()
                     
-                    # 转换为字典格式
+                    # Convert to dictionary format
                     cookie_dict = {}
                     cookie_string = ""
                     
@@ -102,60 +102,60 @@ class CookieExtractor:
                     
                     self.cookies = cookie_dict
                     
-                    # 显示重要Cookie
-                    console.print("\n[cyan]提取到的关键Cookie:[/cyan]")
+                    # Display important Cookies
+                    console.print("\n[cyan]Extracted key Cookies:[/cyan]")
                     important_cookies = ['sessionid', 'sessionid_ss', 'ttwid', 'passport_csrf_token', 'msToken']
                     for name in important_cookies:
                         if name in cookie_dict:
                             value = cookie_dict[name]
                             console.print(f"  • {name}: {value[:20]}..." if len(value) > 20 else f"  • {name}: {value}")
                     
-                    # 保存Cookie
-                    if Confirm.ask("\n是否保存Cookie到配置文件？"):
+                    # Save Cookies
+                    if Confirm.ask("\nSave Cookies to configuration file?"):
                         self._save_cookies(cookie_dict)
-                        console.print("[green]✅ Cookie已保存到配置文件[/green]")
+                        console.print("[green]✅ Cookies saved to configuration file[/green]")
                     
-                    # 保存完整Cookie字符串到文件
+                    # Save full Cookie string to file
                     with open('cookies.txt', 'w', encoding='utf-8') as f:
                         f.write(cookie_string.strip())
-                    console.print("[green]✅ 完整Cookie已保存到 cookies.txt[/green]")
+                    console.print("[green]✅ Full Cookies saved to cookies.txt[/green]")
                     
                     return cookie_dict
                 else:
-                    console.print("\n[red]❌ 登录超时或失败[/red]")
+                    console.print("\n[red]❌ Login timeout or failed[/red]")
                     return {}
                     
             except Exception as e:
-                console.print(f"\n[red]❌ 提取Cookie失败: {e}[/red]")
+                console.print(f"\n[red]❌ Failed to extract Cookies: {e}[/red]")
                 return {}
             finally:
                 await browser.close()
     
     async def _wait_for_login(self, page: Page, timeout: int = 300) -> bool:
-        """等待用户登录
+        """Wait for user to log in
         
         Args:
-            page: 页面对象
-            timeout: 超时时间（秒）
+            page: Page object
+            timeout: Timeout period (seconds)
         """
         start_time = time.time()
         
         while time.time() - start_time < timeout:
-            # 检查是否已登录（多种判断方式）
+            # Check if logged in (multiple ways)
             try:
-                # 方式1：检查是否有用户头像
+                # Type 1: Check for user avatar
                 avatar = await page.query_selector('div[class*="avatar"]')
                 if avatar:
-                    await asyncio.sleep(2)  # 等待Cookie完全加载
+                    await asyncio.sleep(2)  # Wait for Cookies to fully load
                     return True
                 
-                # 方式2：检查URL是否包含用户ID
+                # Type 2: Check if URL contains user ID
                 current_url = page.url
                 if '/user/' in current_url:
                     await asyncio.sleep(2)
                     return True
                 
-                # 方式3：检查是否有特定的登录后元素
+                # Type 3: Check for specific post-login elements
                 user_menu = await page.query_selector('[class*="user-info"]')
                 if user_menu:
                     await asyncio.sleep(2)
@@ -166,49 +166,49 @@ class CookieExtractor:
             
             await asyncio.sleep(2)
             
-            # 显示等待进度
+            # Show waiting progress
             elapsed = int(time.time() - start_time)
             remaining = timeout - elapsed
-            console.print(f"\r[dim]等待登录中... ({remaining}秒后超时)[/dim]", end="")
+            console.print(f"\r[dim]Waiting for login... ({remaining}s remaining)[/dim]", end="")
         
         return False
     
     def _save_cookies(self, cookies: Dict):
-        """保存Cookie到配置文件"""
-        # 读取现有配置
+        """Save Cookies to configuration file"""
+        # Read existing configuration
         if os.path.exists(self.config_path):
             with open(self.config_path, 'r', encoding='utf-8') as f:
                 config = yaml.safe_load(f) or {}
         else:
             config = {}
         
-        # 更新Cookie配置
+        # Update Cookie configuration
         config['cookies'] = cookies
         
-        # 保存配置
+        # Save configuration
         with open(self.config_path, 'w', encoding='utf-8') as f:
             yaml.dump(config, f, allow_unicode=True, default_flow_style=False)
     
     async def quick_extract(self) -> Dict:
-        """快速提取（使用已登录的浏览器会话）"""
-        console.print("\n[cyan]尝试从已打开的浏览器提取Cookie...[/cyan]")
-        console.print("[dim]请确保您已在浏览器中登录抖音[/dim]")
+        """Quick extraction (use an already logged-in browser session)"""
+        console.print("\n[cyan]Attempting to extract Cookies from an open browser...[/cyan]")
+        console.print("[dim]Please make sure you are logged into Douyin in the browser[/dim]")
         
-        # 这里可以使用CDP连接到已打开的浏览器
-        # 需要浏览器以调试模式启动
-        console.print("\n[yellow]请按以下步骤操作：[/yellow]")
-        console.print("1. 关闭所有Chrome浏览器")
-        console.print("2. 使用调试模式启动Chrome:")
+        # Here we could use CDP to connect to an already open browser
+        # Requires browser to be launched in debug mode
+        console.print("\n[yellow]Please follow these steps:[/yellow]")
+        console.print("1. Close all Chrome browsers")
+        console.print("2. Launch Chrome in debug mode:")
         console.print("   Windows: chrome.exe --remote-debugging-port=9222")
         console.print("   Mac: /Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --remote-debugging-port=9222")
-        console.print("3. 在打开的浏览器中登录抖音")
-        console.print("4. 按Enter继续...")
+        console.print("3. Log into Douyin in the opened browser")
+        console.print("4. Press Enter to continue...")
         
         input()
         
         try:
             async with async_playwright() as p:
-                # 连接到已打开的浏览器
+                # Connect to an already open browser
                 browser = await p.chromium.connect_over_cdp("http://localhost:9222")
                 contexts = browser.contexts
                 
@@ -216,7 +216,7 @@ class CookieExtractor:
                     context = contexts[0]
                     pages = context.pages
                     
-                    # 查找抖音页面
+                    # Look for Douyin page
                     douyin_page = None
                     for page in pages:
                         if 'douyin.com' in page.url:
@@ -224,7 +224,7 @@ class CookieExtractor:
                             break
                     
                     if douyin_page:
-                        # 提取Cookie
+                        # Extract Cookies
                         cookies = await context.cookies()
                         cookie_dict = {}
                         
@@ -233,47 +233,47 @@ class CookieExtractor:
                                 cookie_dict[cookie['name']] = cookie['value']
                         
                         if cookie_dict:
-                            console.print("[green]✅ 成功提取Cookie！[/green]")
+                            console.print("[green]✅ Successfully extracted Cookies![/green]")
                             self._save_cookies(cookie_dict)
                             return cookie_dict
                         else:
-                            console.print("[red]未找到抖音Cookie[/red]")
+                            console.print("[red]Douyin Cookies not found[/red]")
                     else:
-                        console.print("[red]未找到抖音页面，请先访问douyin.com[/red]")
+                        console.print("[red]Douyin page not found, please visit douyin.com first[/red]")
                 else:
-                    console.print("[red]未找到浏览器上下文[/red]")
+                    console.print("[red]Browser context not found[/red]")
                     
         except Exception as e:
-            console.print(f"[red]连接浏览器失败: {e}[/red]")
-            console.print("[yellow]请确保浏览器以调试模式启动[/yellow]")
+            console.print(f"[red]Failed to connect to browser: {e}[/red]")
+            console.print("[yellow]Please ensure the browser is launched in debug mode[/yellow]")
         
         return {}
 
 
 async def main():
-    """主函数"""
+    """Main function"""
     extractor = CookieExtractor()
     
-    console.print("\n[cyan]请选择提取方式：[/cyan]")
-    console.print("1. 自动登录提取（推荐）")
-    console.print("2. 从已登录浏览器提取")
-    console.print("3. 手动输入Cookie")
+    console.print("\n[cyan]Please select extraction method:[/cyan]")
+    console.print("1. Auto login extraction (Recommended)")
+    console.print("2. Extract from an already logged-in browser")
+    console.print("3. Manually enter Cookies")
     
-    choice = Prompt.ask("请选择", choices=["1", "2", "3"], default="1")
+    choice = Prompt.ask("Please selection", choices=["1", "2", "3"], default="1")
     
     if choice == "1":
-        # 自动登录提取
-        headless = not Confirm.ask("是否显示浏览器界面？", default=True)
+        # Auto login extraction
+        headless = not Confirm.ask("Show browser interface?", default=True)
         cookies = await extractor.extract_cookies(headless=headless)
         
     elif choice == "2":
-        # 从已登录浏览器提取
+        # Extract from an already logged-in browser
         cookies = await extractor.quick_extract()
         
     else:
-        # 手动输入
-        console.print("\n[cyan]请输入Cookie字符串：[/cyan]")
-        console.print("[dim]格式: name1=value1; name2=value2; ...[/dim]")
+        # Manual entry
+        console.print("\n[cyan]Please enter Cookie string:[/cyan]")
+        console.print("[dim]Format: name1=value1; name2=value2; ...[/dim]")
         cookie_string = Prompt.ask("Cookie")
         
         cookies = {}
@@ -284,20 +284,20 @@ async def main():
         
         if cookies:
             extractor._save_cookies(cookies)
-            console.print("[green]✅ Cookie已保存[/green]")
+            console.print("[green]✅ Cookies saved[/green]")
     
     if cookies:
-        console.print("\n[green]✅ Cookie提取完成！[/green]")
-        console.print("[dim]您现在可以运行下载器了：[/dim]")
+        console.print("\n[green]✅ Cookie extraction complete![/green]")
+        console.print("[dim]You can now run the downloader:[/dim]")
         console.print("python3 downloader.py -c config_simple.yml")
     else:
-        console.print("\n[red]❌ 未能提取Cookie[/red]")
+        console.print("\n[red]❌ Failed to extract Cookies[/red]")
 
 
 if __name__ == '__main__':
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        console.print("\n[yellow]用户取消操作[/yellow]")
+        console.print("\n[yellow]Operation cancelled by user[/yellow]")
     except Exception as e:
-        console.print(f"\n[red]程序异常: {e}[/red]")
+        console.print(f"\n[red]Program exception: {e}[/red]")

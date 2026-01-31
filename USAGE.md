@@ -1,57 +1,57 @@
-# 抖音下载器使用说明
+# Douyin Downloader Usage Instructions
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
-### 1. 安装依赖
+### 1. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. 配置 Cookie（首次使用需要）
+### 2. Configure Cookie (Required for first use)
 ```bash
-# 自动获取（推荐）
+# Automatic acquisition (Recommended)
 python cookie_extractor.py
 
-# 或手动获取
+# Or manual acquisition
 python get_cookies_manual.py
 ```
 
-### 3. 开始下载
+### 3. Start Downloading
 
-#### V1.0 稳定版（推荐用于单个视频）
+#### V1.0 Stable Version (Recommended for single videos)
 ```bash
-# 编辑 config.yml 配置文件
-# 然后运行
+# Edit config.yml configuration file
+# Then run
 python DouYinCommand.py
 ```
 
-#### V2.0 增强版（推荐用于用户主页）
+#### V2.0 Enhanced Version (Recommended for user homepages)
 ```bash
-# 下载用户主页
+# Download user homepage
 python downloader.py -u "https://www.douyin.com/user/xxxxx"
 
-# 自动获取 Cookie 并下载
+# Automatically get Cookie and download
 python downloader.py --auto-cookie -u "https://www.douyin.com/user/xxxxx"
 ```
 
-## 📋 版本对比
+## 📋 Version Comparison
 
-| 功能 | V1.0 (DouYinCommand.py) | V2.0 (downloader.py) |
+| Feature | V1.0 (DouYinCommand.py) | V2.0 (downloader.py) |
 |------|------------------------|---------------------|
-| 单个视频下载 | ✅ 完全正常 | ⚠️ API 问题 |
-| 用户主页下载 | ✅ 正常 | ✅ 完全正常 |
-| Cookie 管理 | 手动配置 | 自动获取 |
-| 使用复杂度 | 简单 | 中等 |
-| 稳定性 | 高 | 中等 |
+| Single video download | ✅ Fully functional | ⚠️ API Issues |
+| User homepage download | ✅ Normal | ✅ Fully functional |
+| Cookie Management | Manual Configuration | Automatic Acquisition |
+| Complexity | Simple | Medium |
+| Stability | High | Medium |
 
-## 🎯 推荐使用场景
+## 🎯 Recommended Use Cases
 
-- **下载单个视频**：使用 V1.0
-- **下载用户主页**：使用 V2.0
-- **批量下载**：使用 V2.0
-- **学习研究**：两个版本都可以
+- **Download single biological video**: Use V1.0
+- **Download user homepage**: Use V2.0
+- **Batch download**: Use V2.0
+- **Learning & Research**: Both versions are suitable
 
-## 📞 获取帮助
+## 📞 Get Help
 
-- 查看详细文档：`README.md`
-- 报告问题：[GitHub Issues](https://github.com/jiji262/douyin-downloader/issues) 
+- View detailed documentation: `README.md`
+- Report issues: [GitHub Issues](https://github.com/jiji262/douyin-downloader/issues)
