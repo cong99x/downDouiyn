@@ -7,9 +7,11 @@ Single Responsibility: Handle HTTP requests and delegate to service layer.
 """
 
 import logging
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, Response
+import time
+import json
 
-from backend.services import DownloadService
+from backend.services import DownloadService, ProgressService
 from backend.dto import DownloadRequest, ApiResponse
 
 logger = logging.getLogger(__name__)
@@ -17,14 +19,40 @@ logger = logging.getLogger(__name__)
 # Create blueprint
 download_bp = Blueprint('download', __name__, url_prefix='/api/download')
 
-# Initialize service (will be configured by app)
+# Initialize services
 download_service = None
+progress_service = ProgressService()
 
 
 def init_download_service(service: DownloadService):
     """Initialize the download service instance."""
     global download_service
     download_service = service
+
+
+@download_bp.route('/progress', methods=['GET'])
+def get_progress():
+    """
+    SSE endpoint to stream download progress.
+    """
+    def generate():
+        last_progress = -1
+        while True:
+            current_progress = progress_service.get_progress()
+            # Only send update if progress changed
+            if current_progress != last_progress:
+                yield f"data: {json.dumps({'progress': current_progress})}\n\n"
+                last_progress = current_progress
+                
+            if current_progress >= 100:
+                # Keep it at 100 for a bit then break or wait for next reset
+                time.sleep(2)
+                # We don't break here to keep the connection alive if needed, 
+                # but frontend will usually close after success
+            
+            time.sleep(0.5) # Poll internal state every 500ms
+
+    return Response(generate(), mimetype='text/event-stream')
 
 
 @download_bp.route('', methods=['POST'])
@@ -84,8 +112,8 @@ def download_video():
             return jsonify(response.to_dict()), 400
         
         # Call service
-        logger.info(f"Download request received for URL: {data['url']}")
-        result = download_service.download_video(data['url'])
+        logger.info(f"Download request received for URL: {download_req.url}")
+        result = download_service.download_video(download_req.url)
         
         if result['success']:
             response = ApiResponse(

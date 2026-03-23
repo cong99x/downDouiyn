@@ -5,5 +5,7 @@
 
 from .download_service import DownloadService
 from .file_service import FileService
+from .progress_service import ProgressService
+from .auth_service import AuthService
 
-__all__ = ['DownloadService', 'FileService']
+__all__ = ['DownloadService', 'FileService', 'ProgressService', 'AuthService']

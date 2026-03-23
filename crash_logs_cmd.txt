@@ -1,0 +1,100 @@
+[2026-01-31 14:30:15] [INFO] [backend.services.file_service] FileService initialized with path: Downloaded
+[2026-01-31 14:30:15] [INFO] [__main__] Flask application created successfully
+[2026-01-31 14:30:15] [INFO] [__main__] Download path: ./Downloaded/
+[2026-01-31 14:30:15] [INFO] [__main__] Starting Flask server on port 5000
+[2026-01-31 14:30:15] [INFO] [__main__] API Documentation:
+[2026-01-31 14:30:15] [INFO] [__main__]   POST /api/download - Download a video
+[2026-01-31 14:30:15] [INFO] [__main__]   GET  /api/files - List downloaded files
+[2026-01-31 14:30:15] [INFO] [__main__]   GET  /api/files/<filename> - Get file info
+[2026-01-31 14:30:15] [INFO] [__main__]   DELETE /api/files/<filename> - Delete a file
+[2026-01-31 14:30:15] [INFO] [__main__]   GET  /api/files/<filename>/stream - Stream video file
+ * Serving Flask app 'app'
+ * Debug mode: on
+[2026-01-31 14:30:15] [INFO] [werkzeug] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.19.0.3:5000
+[2026-01-31 14:30:15] [INFO] [werkzeug] [33mPress CTRL+C to quit[0m
+[2026-01-31 14:30:15] [INFO] [werkzeug]  * Restarting with stat
+[2026-01-31 14:30:15] [INFO] [__main__] Loaded config from config.yml
+[2026-01-31 14:30:15] [INFO] [backend.services.download_service] Loading config from: /app/config.yml
+[2026-01-31 14:30:15] [INFO] [backend.services.download_service] S3 Uploader disabled in config
+[2026-01-31 14:30:15] [INFO] [backend.services.download_service] DownloadService initialized with path: Downloaded
+[2026-01-31 14:30:15] [INFO] [backend.services.file_service] FileService initialized with path: Downloaded
+[2026-01-31 14:30:15] [INFO] [__main__] Flask application created successfully
+[2026-01-31 14:30:15] [INFO] [__main__] Download path: ./Downloaded/
+[2026-01-31 14:30:15] [INFO] [__main__] Starting Flask server on port 5000
+[2026-01-31 14:30:15] [INFO] [__main__] API Documentation:
+[2026-01-31 14:30:15] [INFO] [__main__]   POST /api/download - Download a video
+[2026-01-31 14:30:15] [INFO] [__main__]   GET  /api/files - List downloaded files
+[2026-01-31 14:30:15] [INFO] [__main__]   GET  /api/files/<filename> - Get file info
+[2026-01-31 14:30:15] [INFO] [__main__]   DELETE /api/files/<filename> - Delete a file
+[2026-01-31 14:30:15] [INFO] [__main__]   GET  /api/files/<filename>/stream - Stream video file
+[2026-01-31 14:30:15] [WARNING] [werkzeug]  * Debugger is active!
+[2026-01-31 14:30:15] [INFO] [werkzeug]  * Debugger PIN: 143-990-229
+[2026-01-31 14:30:25] [INFO] [backend.services.file_service] Found 6 video files
+[2026-01-31 14:30:25] [INFO] [werkzeug] 172.19.0.4 - - [31/Jan/2026 14:30:25] "GET /api/files HTTP/1.0" 200 -
+[2026-01-31 14:30:26] [INFO] [backend.controllers.file_controller] Stream request for path: 林沐沐/2026-01-07_17-00-00_某年某月某个星期几 某时某地你为我淋雨. #混音 #雨过后的风景/2026-01-07_17-00-00_某年某月某个星期几 某时某地你为我淋雨. #混音 #雨过后的风景_cover.jpg
+[2026-01-31 14:30:26] [INFO] [backend.services.file_service] get_file_path called with: 林沐沐/2026-01-07_17-00-00_某年某月某个星期几 某时某地你为我淋雨. #混音 #雨过后的风景/2026-01-07_17-00-00_某年某月某个星期几 某时某地你为我淋雨. #混音 #雨过后的风景_cover.jpg
+[2026-01-31 14:30:26] [INFO] [backend.services.file_service] Trying direct path: Downloaded/林沐沐/2026-01-07_17-00-00_某年某月某个星期几 某时某地你为我淋雨. #混音 #雨过后的风景/2026-01-07_17-00-00_某年某月某个星期几 某时某地你为我淋雨. #混音 #雨过后的风景_cover.jpg
+[2026-01-31 14:30:26] [INFO] [backend.controllers.file_controller] Stream request for path: Em Quân Báo Nhà/2025-10-26_19-37-42_Tựu Liệt - Thanh Trì _ 75m2 - 4 tầng - MT 3.8m _ N/2025-10-26_19-37-42_Tựu Liệt - Thanh Trì _ 75m2 - 4 tầng - MT 3.8m _ N_cover.jpg
+[2026-01-31 14:30:26] [INFO] [backend.services.file_service] get_file_path called with: Em Quân Báo Nhà/2025-10-26_19-37-42_Tựu Liệt - Thanh Trì _ 75m2 - 4 tầng - MT 3.8m _ N/2025-10-26_19-37-42_Tựu Liệt - Thanh Trì _ 75m2 - 4 tầng - MT 3.8m _ N_cover.jpg
+[2026-01-31 14:30:26] [INFO] [backend.services.file_service] Trying direct path: Downloaded/Em Quân Báo Nhà/2025-10-26_19-37-42_Tựu Liệt - Thanh Trì _ 75m2 - 4 tầng - MT 3.8m _ N/2025-10-26_19-37-42_Tựu Liệt - Thanh Trì _ 75m2 - 4 tầng - MT 3.8m _ N_cover.jpg
+[2026-01-31 14:30:26] [INFO] [backend.controllers.file_controller] Stream request for path: Hà Nội Ăn Gì _/2025-11-04_20-17-37_mùa đông thầm thử quán lẩu khế của diễn viên VTV #/2025-11-04_20-17-37_mùa đông thầm thử quán lẩu khế của diễn viên VTV #_cover.jpg
+[2026-01-31 14:30:26] [INFO] [backend.services.file_service] get_file_path called with: Hà Nội Ăn Gì _/2025-11-04_20-17-37_mùa đông thầm thử quán lẩu khế của diễn viên VTV #/2025-11-04_20-17-37_mùa đông thầm thử quán lẩu khế của diễn viên VTV #_cover.jpg
+[2026-01-31 14:30:26] [INFO] [backend.services.file_service] Trying direct path: Downloaded/Hà Nội Ăn Gì _/2025-11-04_20-17-37_mùa đông thầm thử quán lẩu khế của diễn viên VTV #/2025-11-04_20-17-37_mùa đông thầm thử quán lẩu khế của diễn viên VTV #_cover.jpg
+[2026-01-31 14:30:26] [INFO] [backend.services.file_service] Direct path exists!
+[2026-01-31 14:30:26] [INFO] [backend.controllers.file_controller] Resolved physical path: Downloaded/林沐沐/2026-01-07_17-00-00_某年某月某个星期几 某时某地你为我淋雨. #混音 #雨过后的风景/2026-01-07_17-00-00_某年某月某个星期几 某时某地你为我淋雨. #混音 #雨过后的风景_cover.jpg
+[2026-01-31 14:30:26] [INFO] [backend.services.file_service] Direct path exists!
+[2026-01-31 14:30:26] [INFO] [backend.controllers.file_controller] Resolved physical path: Downloaded/Em Quân Báo Nhà/2025-10-26_19-37-42_Tựu Liệt - Thanh Trì _ 75m2 - 4 tầng - MT 3.8m _ N/2025-10-26_19-37-42_Tựu Liệt - Thanh Trì _ 75m2 - 4 tầng - MT 3.8m _ N_cover.jpg
+[2026-01-31 14:30:26] [INFO] [backend.services.file_service] Direct path exists!
+[2026-01-31 14:30:26] [INFO] [backend.controllers.file_controller] Resolved physical path: Downloaded/Hà Nội Ăn Gì _/2025-11-04_20-17-37_mùa đông thầm thử quán lẩu khế của diễn viên VTV #/2025-11-04_20-17-37_mùa đông thầm thử quán lẩu khế của diễn viên VTV #_cover.jpg
+[2026-01-31 14:30:26] [INFO] [backend.controllers.file_controller] File exists, starting stream with mimetype: image/jpeg
+[2026-01-31 14:30:26] [ERROR] [backend.controllers.file_controller] Error streaming file 林沐沐/2026-01-07_17-00-00_某年某月某个星期几 某时某地你为我淋雨. #混音 #雨过后的风景/2026-01-07_17-00-00_某年某月某个星期几 某时某地你为我淋雨. #混音 #雨过后的风景_cover.jpg: [Errno 2] No such file or directory: '/app/backend/Downloaded/林沐沐/2026-01-07_17-00-00_某年某月某个星期几 某时某地你为我淋雨. #混音 #雨过后的风景/2026-01-07_17-00-00_某年某月某个星期几 某时某地你为我淋雨. #混音 #雨过后的风景_cover.jpg'
+Traceback (most recent call last):
+  File "/app/backend/controllers/file_controller.py", line 182, in stream_file
+    return send_file(
+  File "/usr/local/lib/python3.10/site-packages/flask/helpers.py", line 501, in send_file
+    return werkzeug.utils.send_file(  # type: ignore[return-value]
+  File "/usr/local/lib/python3.10/site-packages/werkzeug/utils.py", line 427, in send_file
+    stat = os.stat(path)
+FileNotFoundError: [Errno 2] No such file or directory: '/app/backend/Downloaded/林沐沐/2026-01-07_17-00-00_某年某月某个星期几 某时某地你为我淋雨. #混音 #雨过后的风景/2026-01-07_17-00-00_某年某月某个星期几 某时某地你为我淋雨. #混音 #雨过后的风景_cover.jpg'
+[2026-01-31 14:30:26] [INFO] [backend.controllers.file_controller] File exists, starting stream with mimetype: image/jpeg
+[2026-01-31 14:30:26] [INFO] [backend.controllers.file_controller] File exists, starting stream with mimetype: image/jpeg
+[2026-01-31 14:30:26] [INFO] [werkzeug] 172.19.0.4 - - [31/Jan/2026 14:30:26] "[35m[1mGET /api/files/stream?path=林沐沐/2026-01-07_17-00-00_某年某月某个星期几%20某时某地你为我淋雨.%20%23混音%20%23雨过后的风景/2026-01-07_17-00-00_某年某月某个星期几%20某时某地你为我淋雨.%20%23混音%20%23雨过后的风景_cover.jpg HTTP/1.0[0m" 500 -
+[2026-01-31 14:30:26] [ERROR] [backend.controllers.file_controller] Error streaming file Em Quân Báo Nhà/2025-10-26_19-37-42_Tựu Liệt - Thanh Trì _ 75m2 - 4 tầng - MT 3.8m _ N/2025-10-26_19-37-42_Tựu Liệt - Thanh Trì _ 75m2 - 4 tầng - MT 3.8m _ N_cover.jpg: [Errno 2] No such file or directory: '/app/backend/Downloaded/Em Quân Báo Nhà/2025-10-26_19-37-42_Tựu Liệt - Thanh Trì _ 75m2 - 4 tầng - MT 3.8m _ N/2025-10-26_19-37-42_Tựu Liệt - Thanh Trì _ 75m2 - 4 tầng - MT 3.8m _ N_cover.jpg'
+Traceback (most recent call last):
+  File "/app/backend/controllers/file_controller.py", line 182, in stream_file
+    return send_file(
+  File "/usr/local/lib/python3.10/site-packages/flask/helpers.py", line 501, in send_file
+    return werkzeug.utils.send_file(  # type: ignore[return-value]
+  File "/usr/local/lib/python3.10/site-packages/werkzeug/utils.py", line 427, in send_file
+    stat = os.stat(path)
+FileNotFoundError: [Errno 2] No such file or directory: '/app/backend/Downloaded/Em Quân Báo Nhà/2025-10-26_19-37-42_Tựu Liệt - Thanh Trì _ 75m2 - 4 tầng - MT 3.8m _ N/2025-10-26_19-37-42_Tựu Liệt - Thanh Trì _ 75m2 - 4 tầng - MT 3.8m _ N_cover.jpg'
+[2026-01-31 14:30:26] [ERROR] [backend.controllers.file_controller] Error streaming file Hà Nội Ăn Gì _/2025-11-04_20-17-37_mùa đông thầm thử quán lẩu khế của diễn viên VTV #/2025-11-04_20-17-37_mùa đông thầm thử quán lẩu khế của diễn viên VTV #_cover.jpg: [Errno 2] No such file or directory: '/app/backend/Downloaded/Hà Nội Ăn Gì _/2025-11-04_20-17-37_mùa đông thầm thử quán lẩu khế của diễn viên VTV #/2025-11-04_20-17-37_mùa đông thầm thử quán lẩu khế của diễn viên VTV #_cover.jpg'
+Traceback (most recent call last):
+  File "/app/backend/controllers/file_controller.py", line 182, in stream_file
+    return send_file(
+  File "/usr/local/lib/python3.10/site-packages/flask/helpers.py", line 501, in send_file
+    return werkzeug.utils.send_file(  # type: ignore[return-value]
+  File "/usr/local/lib/python3.10/site-packages/werkzeug/utils.py", line 427, in send_file
+    stat = os.stat(path)
+FileNotFoundError: [Errno 2] No such file or directory: '/app/backend/Downloaded/Hà Nội Ăn Gì _/2025-11-04_20-17-37_mùa đông thầm thử quán lẩu khế của diễn viên VTV #/2025-11-04_20-17-37_mùa đông thầm thử quán lẩu khế của diễn viên VTV #_cover.jpg'
+[2026-01-31 14:30:26] [INFO] [werkzeug] 172.19.0.4 - - [31/Jan/2026 14:30:26] "[35m[1mGET /api/files/stream?path=Em%20Quân%20Báo%20Nhà/2025-10-26_19-37-42_Tựu%20Liệt%20-%20Thanh%20Trì%20_%2075m2%20-%204%20tầng%20-%20MT%203.8m%20_%20N/2025-10-26_19-37-42_Tựu%20Liệt%20-%20Thanh%20Trì%20_%2075m2%20-%204%20tầng%20-%20MT%203.8m%20_%20N_cover.jpg HTTP/1.0[0m" 500 -
+[2026-01-31 14:30:26] [INFO] [werkzeug] 172.19.0.4 - - [31/Jan/2026 14:30:26] "[35m[1mGET /api/files/stream?path=Hà%20Nội%20Ăn%20Gì%20_/2025-11-04_20-17-37_mùa%20đông%20thầm%20thử%20quán%20lẩu%20khế%20của%20diễn%20viên%20VTV%20%23/2025-11-04_20-17-37_mùa%20đông%20thầm%20thử%20quán%20lẩu%20khế%20của%20diễn%20viên%20VTV%20%23_cover.jpg HTTP/1.0[0m" 500 -
+[2026-01-31 14:30:31] [INFO] [backend.controllers.file_controller] Stream request for path: aweme/2024-07-22 10.42.32_旋我嘴里酥得我只想冲下楼然后往嘴里狂塞炸/2024-07-22 10.42.32_旋我嘴里酥得我只想冲下楼然后往嘴里狂塞炸_video.mp4
+[2026-01-31 14:30:31] [INFO] [backend.services.file_service] get_file_path called with: aweme/2024-07-22 10.42.32_旋我嘴里酥得我只想冲下楼然后往嘴里狂塞炸/2024-07-22 10.42.32_旋我嘴里酥得我只想冲下楼然后往嘴里狂塞炸_video.mp4
+[2026-01-31 14:30:31] [INFO] [backend.services.file_service] Trying direct path: Downloaded/aweme/2024-07-22 10.42.32_旋我嘴里酥得我只想冲下楼然后往嘴里狂塞炸/2024-07-22 10.42.32_旋我嘴里酥得我只想冲下楼然后往嘴里狂塞炸_video.mp4
+[2026-01-31 14:30:31] [INFO] [backend.services.file_service] Direct path exists!
+[2026-01-31 14:30:31] [INFO] [backend.controllers.file_controller] Resolved physical path: Downloaded/aweme/2024-07-22 10.42.32_旋我嘴里酥得我只想冲下楼然后往嘴里狂塞炸/2024-07-22 10.42.32_旋我嘴里酥得我只想冲下楼然后往嘴里狂塞炸_video.mp4
+[2026-01-31 14:30:31] [INFO] [backend.controllers.file_controller] File exists, starting stream with mimetype: video/mp4
+[2026-01-31 14:30:31] [ERROR] [backend.controllers.file_controller] Error streaming file aweme/2024-07-22 10.42.32_旋我嘴里酥得我只想冲下楼然后往嘴里狂塞炸/2024-07-22 10.42.32_旋我嘴里酥得我只想冲下楼然后往嘴里狂塞炸_video.mp4: [Errno 2] No such file or directory: '/app/backend/Downloaded/aweme/2024-07-22 10.42.32_旋我嘴里酥得我只想冲下楼然后往嘴里狂塞炸/2024-07-22 10.42.32_旋我嘴里酥得我只想冲下楼然后往嘴里狂塞炸_video.mp4'
+Traceback (most recent call last):
+  File "/app/backend/controllers/file_controller.py", line 182, in stream_file
+    return send_file(
+  File "/usr/local/lib/python3.10/site-packages/flask/helpers.py", line 501, in send_file
+    return werkzeug.utils.send_file(  # type: ignore[return-value]
+  File "/usr/local/lib/python3.10/site-packages/werkzeug/utils.py", line 427, in send_file
+    stat = os.stat(path)
+FileNotFoundError: [Errno 2] No such file or directory: '/app/backend/Downloaded/aweme/2024-07-22 10.42.32_旋我嘴里酥得我只想冲下楼然后往嘴里狂塞炸/2024-07-22 10.42.32_旋我嘴里酥得我只想冲下楼然后往嘴里狂塞炸_video.mp4'
+[2026-01-31 14:30:31] [INFO] [werkzeug] 172.19.0.4 - - [31/Jan/2026 14:30:31] "[35m[1mGET /api/files/stream?path=aweme/2024-07-22%2010.42.32_旋我嘴里酥得我只想冲下楼然后往嘴里狂塞炸/2024-07-22%2010.42.32_旋我嘴里酥得我只想冲下楼然后往嘴里狂塞炸_video.mp4 HTTP/1.0[0m" 500 -

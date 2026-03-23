@@ -56,7 +56,7 @@
 
             <div class="modal-body">
               <video
-                :src="getVideoUrl(previewVideo.filename)"
+                :src="getVideoUrl(previewVideo.file_path)"
                 controls
                 autoplay
                 class="preview-video"
@@ -70,9 +70,14 @@
                 <span>📁 {{ previewVideo.file_size_mb }} MB</span>
                 <span>📅 {{ previewVideo.download_date_formatted }}</span>
               </div>
-              <button class="btn btn-danger" @click="confirmDelete(previewVideo)">
-                🗑️ Delete
-              </button>
+              <div class="modal-actions">
+                <button class="btn btn-primary" @click="downloadVideo(previewVideo)">
+                  📥 Download
+                </button>
+                <button class="btn btn-danger" @click="confirmDelete(previewVideo)">
+                  🗑️ Delete
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -109,7 +114,7 @@
 <script>
 import { ref, onMounted } from 'vue';
 import VideoCard from './VideoCard.vue';
-import { getFiles, deleteFile, getVideoStreamUrl } from '../services/api';
+import { getFiles, deleteFile, getVideoStreamUrl, getFileDownloadUrl } from '../services/api';
 
 export default {
   name: 'ManagementTab',
@@ -154,10 +159,11 @@ export default {
       if (!deleteConfirm.value) return;
 
       try {
-        const response = await deleteFile(deleteConfirm.value.filename);
+        // Use file_path for more accurate deletion in subfolders
+        const response = await deleteFile(deleteConfirm.value.file_path);
         if (response.status === 'success') {
           // Remove from list
-          videos.value = videos.value.filter(v => v.filename !== deleteConfirm.value.filename);
+          videos.value = videos.value.filter(v => v.file_path !== deleteConfirm.value.file_path);
           deleteConfirm.value = null;
         }
       } catch (error) {
@@ -168,6 +174,16 @@ export default {
 
     const getVideoUrl = (filename) => {
       return getVideoStreamUrl(filename);
+    };
+
+    const downloadVideo = (video) => {
+      const url = getFileDownloadUrl(video.file_path);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', video.filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     };
 
     onMounted(() => {
@@ -184,7 +200,8 @@ export default {
       closePreview,
       confirmDelete,
       handleDelete,
-      getVideoUrl
+      getVideoUrl,
+      downloadVideo
     };
   }
 };
@@ -369,6 +386,11 @@ export default {
   gap: var(--spacing-md);
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
+}
+
+.modal-actions {
+  display: flex;
+  gap: var(--spacing-sm);
 }
 
 /* Modal Transitions */

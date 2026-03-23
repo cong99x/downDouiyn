@@ -24,3 +24,7 @@ black==23.11.0           # 代码格式化
 # 其他可能需要的包
 python-dateutil>=2.8.2
 requests-toolbelt>=1.0.0
+tqdm==4.66.1
+brotli==1.1.0
+beautifulsoup4==4.12.2
+lxml==4.9.3

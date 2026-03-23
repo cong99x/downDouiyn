@@ -49,8 +49,16 @@ class Douyin(object):
 
     # 从分享链接中提取网址
     def getShareLink(self, string):
-        # findall() 查找匹配正则表达式的字符串
-        return re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', string)[0]
+        # 查找匹配正则表达式的字符串
+        try:
+            # More robust regex to find http/https URLs
+            match = re.search(r'(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)', string)
+            if match:
+                return match.group(1)
+            else:
+                return string  # Return original string if no URL found, maybe it is a raw URL
+        except Exception:
+            return string
 
     # 得到 作品id 或者 用户id
     # 传入 url 支持 https://www.iesdouyin.com 与 https://v.douyin.com

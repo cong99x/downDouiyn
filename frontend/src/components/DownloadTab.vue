@@ -31,6 +31,20 @@
           </button>
         </div>
 
+        <!-- Progress Bar -->
+        <div v-if="isDownloading" class="download-progress-container fade-in">
+          <div class="progress-info">
+            <span>{{ progressStatus }}</span>
+            <span>{{ downloadProgress }}%</span>
+          </div>
+          <div class="progress-bar">
+            <div 
+              class="progress-fill" 
+              :style="{ width: downloadProgress + '%' }"
+            ></div>
+          </div>
+        </div>
+
         <!-- Error Message -->
         <div v-if="errorMessage" class="alert alert-error slide-in">
           <span class="alert-icon">⚠️</span>
@@ -101,6 +115,45 @@ export default {
     const isDownloading = ref(false);
     const errorMessage = ref('');
     const downloadResult = ref(null);
+    const downloadProgress = ref(0);
+    const progressStatus = ref('Preparing...');
+    let eventSource = null;
+
+    const startProgressTracking = () => {
+      if (eventSource) eventSource.close();
+      
+      const protocol = window.location.protocol;
+      const host = window.location.host;
+      const sseUrl = `${protocol}//${host}/api/download/progress`;
+      
+      eventSource = new EventSource(sseUrl);
+      
+      eventSource.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          downloadProgress.value = data.progress;
+          if (data.progress > 0 && data.progress < 100) {
+            progressStatus.value = 'Downloading video...';
+          } else if (data.progress >= 100) {
+            progressStatus.value = 'Processing...';
+          }
+        } catch (err) {
+          console.error('Error parsing SSE data:', err);
+        }
+      };
+
+      eventSource.onerror = (err) => {
+        console.error('SSE Error:', err);
+        eventSource.close();
+      };
+    };
+
+    const stopProgressTracking = () => {
+      if (eventSource) {
+        eventSource.close();
+        eventSource = null;
+      }
+    };
 
     const handleDownload = async () => {
       if (!videoUrl.value.trim()) {
@@ -112,6 +165,11 @@ export default {
       errorMessage.value = '';
       downloadResult.value = null;
       isDownloading.value = true;
+      downloadProgress.value = 0;
+      progressStatus.value = 'Initializing download...';
+
+      // Start tracking progress via SSE
+      startProgressTracking();
 
       try {
         const response = await downloadVideo(videoUrl.value);
@@ -119,6 +177,7 @@ export default {
         if (response.status === 'success') {
           downloadResult.value = response.data;
           videoUrl.value = ''; // Clear input
+          downloadProgress.value = 100;
         } else {
           errorMessage.value = response.message || 'Download failed';
         }
@@ -127,6 +186,7 @@ export default {
         errorMessage.value = error.message || 'Failed to download video. Please check the URL and try again.';
       } finally {
         isDownloading.value = false;
+        stopProgressTracking();
       }
     };
 
@@ -140,6 +200,8 @@ export default {
       isDownloading,
       errorMessage,
       downloadResult,
+      downloadProgress,
+      progressStatus,
       handleDownload,
       clearResult
     };
@@ -195,6 +257,38 @@ export default {
 .input-group .btn {
   white-space: nowrap;
   min-width: 140px;
+}
+
+/* Progress Bar Styles */
+.download-progress-container {
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--color-bg-tertiary);
+  border-radius: var(--radius-md);
+  border: 1px solid hsla(var(--color-primary-hsl), 0.2);
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.progress-bar {
+  height: 8px;
+  background: var(--color-bg-secondary);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  transition: width 0.3s ease;
+  box-shadow: 0 0 10px hsla(var(--color-primary-hsl), 0.5);
 }
 
 /* Alert Styles */

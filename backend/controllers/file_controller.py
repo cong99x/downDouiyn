@@ -7,6 +7,7 @@ Single Responsibility: Handle HTTP requests for file operations.
 """
 
 import logging
+import mimetypes
 from flask import Blueprint, request, jsonify, send_file
 from pathlib import Path
 
@@ -160,43 +161,72 @@ def delete_file(filename: str):
         return jsonify(response.to_dict()), 500
 
 
-@file_bp.route('/<path:filename>/stream', methods=['GET'])
-def stream_file(filename: str):
-    """
-    Stream a video file for preview.
+@file_bp.route('/stream', methods=['GET'])
+def stream_file():
+    """Stream a video file for preview."""
+    path_param = request.args.get('path')
+    logger.info(f"Stream request for path: {path_param}")
     
-    Args:
-        filename: Name of the file to stream
-    
-    Response:
-        Video file stream
-    """
     try:
-        file_path = file_service.get_file_path(filename)
-        
-        if file_path and file_path.exists():
-            return send_file(
-                str(file_path),
-                mimetype='video/mp4',
-                as_attachment=False,
-                download_name=filename
-            )
-        else:
-            response = ApiResponse(
-                status='error',
-                message='File not found',
-                errors=[f'File not found: {filename}']
-            )
-            return jsonify(response.to_dict()), 404
+        if not path_param:
+            return jsonify({'status': 'error', 'message': 'No file path provided'}), 400
             
+        file_path = file_service.get_file_path(path_param)
+        logger.info(f"Resolved physical path: {file_path}")
+        
+        if file_path and file_path.exists() and file_path.is_file():
+            # Use absolute path as string
+            abs_path = str(file_path.absolute())
+            mime_type, _ = mimetypes.guess_type(abs_path)
+            mime_type = mime_type or 'application/octet-stream'
+            
+            logger.info(f"Serving file: {abs_path} with mimetype: {mime_type}")
+            return send_file(
+                abs_path,
+                mimetype=mime_type,
+                as_attachment=False,
+                conditional=True
+            )
+        
+        logger.warning(f"File not found: {path_param}")
+        return jsonify({'status': 'error', 'message': f'File not found: {path_param}'}), 404
     except Exception as e:
-        logger.error(f"Error streaming file: {str(e)}", exc_info=True)
-        response = ApiResponse(
-            status='error',
-            message='Failed to stream file',
-            errors=[str(e)]
-        )
-        return jsonify(response.to_dict()), 500
+        import traceback
+        logger.error(f"Error streaming file {path_param}: {str(e)}")
+        logger.error(traceback.format_exc())
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+
+@file_bp.route('/download', methods=['GET'])
+def download_file():
+    """Download a video file."""
+    path_param = request.args.get('path')
+    logger.info(f"Download request for path: {path_param}")
+    
+    try:
+        if not path_param:
+            return jsonify({'status': 'error', 'message': 'No file path provided'}), 400
+            
+        file_path = file_service.get_file_path(path_param)
+        logger.info(f"Resolved physical path: {file_path}")
+        
+        if file_path and file_path.exists() and file_path.is_file():
+            abs_path = str(file_path.absolute())
+            logger.info(f"Downloading file: {abs_path}")
+            return send_file(
+                abs_path,
+                mimetype='video/mp4',
+                as_attachment=True,
+                download_name=file_path.name
+            )
+        
+        logger.warning(f"File not found for download: {path_param}")
+        return jsonify({'status': 'error', 'message': f'File not found: {path_param}'}), 404
+    except Exception as e:
+        import traceback
+        logger.error(f"Error downloading file {path_param}: {str(e)}")
+        logger.error(traceback.format_exc())
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
 @file_bp.route('/health', methods=['GET'])

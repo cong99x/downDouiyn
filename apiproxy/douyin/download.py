@@ -26,7 +26,7 @@ logger = logging.getLogger("douyin_downloader")
 console = Console()
 
 class Download(object):
-    def __init__(self, thread=5, music=True, cover=True, avatar=True, resjson=True, folderstyle=True, custom_headers=None):
+    def __init__(self, thread=5, music=True, cover=True, avatar=True, resjson=True, folderstyle=True, custom_headers=None, progress_callback=None):
         self.thread = thread
         self.music = music
         self.cover = cover
@@ -34,6 +34,7 @@ class Download(object):
         self.resjson = resjson
         self.folderstyle = folderstyle
         self.custom_headers = custom_headers  # Support for TikTok headers
+        self.progress_callback = progress_callback
         self.console = Console()
         self.progress = Progress(
             SpinnerColumn(),
@@ -68,9 +69,20 @@ class Download(object):
             # 下载视频或图集
             if aweme["awemeType"] == 0:  # 视频
                 video_path = path / f"{name}_video.mp4"
+                
+                # Lấy URL video
                 url_list = aweme.get("video", {}).get("play_addr", {}).get("url_list", [])
-                if url := self._get_first_url(url_list):
-                    if not self._download_media(url, video_path, f"[视频]{desc}"):
+                video_url = self._get_first_url(url_list)
+                
+                if video_url:
+                    # Kiểm tra xem URL có phải là playwm (có watermark) không
+                    if 'playwm' in video_url:
+                        logger.info(f"🔄 Phát hiện URL có watermark, đang chuyển đổi...")
+                        # Chuyển đổi sang URL không watermark
+                        video_url = self._convert_to_no_watermark_url(video_url, aweme)
+                        logger.info(f"✅ Đã chuyển đổi sang URL không watermark")
+                    
+                    if not self._download_media(video_url, video_path, f"[视频]{desc}"):
                         raise Exception("视频下载失败")
                 else:
                     logger.warning(f"视频URL为空: {desc}")
@@ -112,6 +124,52 @@ class Download(object):
 
         except Exception as e:
             raise Exception(f"下载失败: {str(e)}")
+    
+    def _convert_to_no_watermark_url(self, watermark_url: str, aweme: dict) -> str:
+        """
+        Chuyển đổi URL có watermark thành URL không watermark
+        
+        Args:
+            watermark_url: URL có watermark (playwm)
+            aweme: Dữ liệu video để lấy thông tin bổ sung
+            
+        Returns:
+            URL không watermark
+        """
+        try:
+            # Lấy video_id từ URL
+            import re
+            from urllib.parse import urlparse, parse_qs
+            
+            # Parse URL
+            parsed = urlparse(watermark_url)
+            params = parse_qs(parsed.query)
+            
+            video_id = params.get('video_id', [None])[0]
+            ratio = params.get('ratio', ['720p'])[0]
+            
+            if not video_id:
+                # Thử lấy từ aweme data
+                video_id = aweme.get("video", {}).get("play_addr", {}).get("uri", "")
+            
+            if video_id:
+                # Tạo URL không watermark
+                # Phương pháp 1: Thay playwm bằng play
+                no_wm_url = f"https://aweme.snssdk.com/aweme/v1/play/?video_id={video_id}&ratio={ratio}&line=0"
+                
+                logger.info(f"🔄 Chuyển đổi URL:")
+                logger.info(f"   Từ: {watermark_url[:80]}...")
+                logger.info(f"   Sang: {no_wm_url[:80]}...")
+                
+                return no_wm_url
+            else:
+                logger.warning("⚠️ Không tìm thấy video_id, sử dụng URL gốc")
+                return watermark_url
+                
+        except Exception as e:
+            logger.error(f"❌ Lỗi khi chuyển đổi URL: {str(e)}")
+            return watermark_url
+
 
     def awemeDownload(self, awemeDict: dict, savePath: Path) -> None:
         """下载单个作品的所有内容"""
@@ -227,10 +285,15 @@ class Download(object):
 
                     with open(filepath, mode) as f:
                         try:
+                            downloaded = file_size
                             for chunk in response.iter_content(chunk_size=self.chunk_size):
                                 if chunk:
                                     size = f.write(chunk)
+                                    downloaded += size
                                     self.progress.update(task, advance=size)
+                                    if self.progress_callback:
+                                        percentage = (downloaded / total_size) * 100
+                                        self.progress_callback(percentage)
                         except (requests.exceptions.ConnectionError,
                                requests.exceptions.ChunkedEncodingError,
                                Exception) as chunk_error:

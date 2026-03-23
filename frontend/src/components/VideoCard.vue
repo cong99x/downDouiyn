@@ -1,7 +1,7 @@
 <template>
   <div class="video-card card" @click="$emit('preview', video)">
     <div class="card-thumbnail">
-      <div v-if="video.thumbnail" class="thumbnail-image" :style="{ backgroundImage: `url(${video.thumbnail})` }">
+      <div v-if="thumbnailUrl" class="thumbnail-image" :style="{ backgroundImage: `url(${thumbnailUrl})` }">
         <div class="play-overlay">
           <span class="play-icon">▶</span>
         </div>
@@ -33,6 +33,13 @@
 
     <div class="card-actions" @click.stop>
       <button 
+        class="btn-icon btn-primary" 
+        @click="downloadVideo"
+        title="Download to my computer"
+      >
+        📥
+      </button>
+      <button 
         class="btn-icon btn-danger" 
         @click="$emit('delete', video)"
         title="Delete video"
@@ -44,6 +51,8 @@
 </template>
 
 <script>
+import { getFileDownloadUrl, getVideoStreamUrl } from '../services/api';
+
 export default {
   name: 'VideoCard',
   props: {
@@ -53,10 +62,30 @@ export default {
     }
   },
   emits: ['preview', 'delete'],
+  computed: {
+    thumbnailUrl() {
+      if (!this.video.thumbnail) return null;
+      // If it's already a full URL (external), return it
+      if (this.video.thumbnail.startsWith('http')) return this.video.thumbnail;
+      // Otherwise serve via API
+      return getVideoStreamUrl(this.video.thumbnail);
+    }
+  },
   methods: {
     truncateTitle(title) {
       const maxLength = 60;
       return title.length > maxLength ? title.substring(0, maxLength) + '...' : title;
+    },
+
+    downloadVideo() {
+      const url = getFileDownloadUrl(this.video.file_path);
+      // Create a temporary link and trigger download
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', this.video.filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     },
     
     formatDuration(seconds) {

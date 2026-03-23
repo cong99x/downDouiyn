@@ -31,7 +31,7 @@ class FileService:
         Args:
             download_path: Path where downloaded files are stored
         """
-        self.download_path = Path(download_path) if download_path else Path(os.getcwd()) / "Downloaded"
+        self.download_path = Path(download_path).resolve() if download_path else Path(os.getcwd()).resolve() / "Downloaded"
         self.s3_uploader = self._init_s3_uploader()
         logger.info(f"FileService initialized with path: {self.download_path}")
 
@@ -218,18 +218,24 @@ class FileService:
         Delete a video file and its associated files (JSON, cover, etc.).
         
         Args:
-            filename: Name of the file or relative path
+            filename: Name of the file or relative path from download_path
             
         Returns:
             True if deletion successful, False otherwise
         """
         try:
-            # Find the video file
-            video_path = None
-            for video_file in self.download_path.rglob(filename):
-                if video_file.is_file() and video_file.suffix == '.mp4':
-                    video_path = video_file
-                    break
+            # First, try as a direct relative path (more precise)
+            video_path = self.download_path / filename
+            
+            # If not found directly, try to search (fallback)
+            if not video_path.exists() or not video_path.is_file():
+                logger.info(f"File not found at direct path {video_path}, searching...")
+                video_path = None
+                # Use a safer search that doesn't treat filename as a glob pattern if it contains []
+                for file in self.download_path.rglob("*"):
+                    if file.is_file() and (file.name == filename or str(file.relative_to(self.download_path)) == filename):
+                        video_path = file
+                        break
             
             if not video_path:
                 logger.warning(f"File not found for deletion: {filename}")
@@ -246,23 +252,21 @@ class FileService:
                 video_path.unlink()
                 deleted_files.append(str(video_path.name))
             
-            # Delete JSON metadata
-            json_path = parent_dir / f"{base_name}.json"
-            if json_path.exists():
-                json_path.unlink()
-                deleted_files.append(str(json_path.name))
+            # Also try to delete files in S3 if enabled
+            if self.s3_uploader and self.s3_uploader.enabled:
+                try:
+                    # Logic for S3 deletion if needed, for now just local
+                    pass
+                except Exception as s3_err:
+                    logger.warning(f"Failed to delete from S3: {s3_err}")
             
-            # Delete cover image
-            cover_path = parent_dir / f"{base_name}_cover.jpg"
-            if cover_path.exists():
-                cover_path.unlink()
-                deleted_files.append(str(cover_path.name))
-            
-            # Delete music file
-            music_path = parent_dir / f"{base_name}_music.mp3"
-            if music_path.exists():
-                music_path.unlink()
-                deleted_files.append(str(music_path.name))
+            # Find and delete associated metadata files in the same directory
+            # We look for files starting with the same stem and having common extensions
+            for suffix in ['.json', '_cover.jpg', '_music.mp3', '.mp3', '.jpg']:
+                assoc_file = parent_dir / f"{base_name}{suffix}"
+                if assoc_file.exists():
+                    assoc_file.unlink()
+                    deleted_files.append(assoc_file.name)
             
             logger.info(f"Deleted files: {', '.join(deleted_files)}")
             return True
@@ -273,19 +277,29 @@ class FileService:
     
     def get_file_path(self, filename: str) -> Optional[Path]:
         """
-        Get full path to a file.
-        
+        Get absolute path to a file.
         Args:
-            filename: Name of the file or relative path
-            
+            filename: Name of the file or relative path (e.g. 'aweme/vid.mp4')
         Returns:
-            Path object or None if not found
+            Absolute Path object or None if not found
         """
         try:
-            for video_file in self.download_path.rglob(filename):
-                if video_file.is_file():
-                    return video_file
+            logger.debug(f"get_file_path called with: {filename}")
+            
+            # 1. Try as a relative path from download_path
+            path = (self.download_path / filename).resolve()
+            if path.exists() and path.is_file():
+                # Security check: ensure the file is inside the download_path
+                if str(path).startswith(str(self.download_path)):
+                    return path
+            
+            # 2. Try as a pure filename (search for it if direct path fails)
+            just_filename = os.path.basename(filename)
+            for video_file in self.download_path.rglob("*"):
+                if video_file.is_file() and video_file.name == just_filename:
+                    return video_file.resolve()
+                    
             return None
         except Exception as e:
-            logger.error(f"Error getting file path: {str(e)}")
+            logger.error(f"Error getting file path for {filename}: {str(e)}")
             return None

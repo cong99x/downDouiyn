@@ -8,6 +8,11 @@
           <h1>Douyin Downloader</h1>
         </div>
         <p class="tagline">Download videos without watermark</p>
+        <div class="header-actions">
+          <button class="btn btn-secondary btn-sm" @click="showAuthModal = true">
+            <span>🔑</span> Login Douyin
+          </button>
+        </div>
       </div>
     </header>
 
@@ -52,6 +57,9 @@
     <footer class="app-footer">
       <p>Made with ❤️ for video enthusiasts</p>
     </footer>
+
+    <!-- Modals -->
+    <AuthModal v-if="showAuthModal" @close="showAuthModal = false" />
   </div>
 </template>
 
@@ -59,15 +67,18 @@
 import { ref } from 'vue';
 import DownloadTab from './components/DownloadTab.vue';
 import ManagementTab from './components/ManagementTab.vue';
+import AuthModal from './components/AuthModal.vue';
 
 export default {
   name: 'App',
   components: {
     DownloadTab,
-    ManagementTab
+    ManagementTab,
+    AuthModal
   },
   setup() {
     const activeTab = ref('download');
+    const showAuthModal = ref(false);
 
     const switchTab = (tabName) => {
       activeTab.value = tabName;
@@ -75,6 +86,7 @@ export default {
 
     return {
       activeTab,
+      showAuthModal,
       switchTab
     };
   }

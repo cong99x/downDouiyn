@@ -8,13 +8,19 @@ from botocore.exceptions import ClientError, NoCredentialsError
 logger = logging.getLogger(__name__)
 
 class S3Uploader:
-    def __init__(self, config):
+    def __init__(self, config=None, **kwargs):
         """
         Initialize S3 Uploader
-        :param config: Dictionary containing 'aws' configuration
+        :param config: Dictionary containing 'aws' configuration or individual settings
         """
-        self.config = config.get('aws', {})
-        self.enabled = self.config.get('enabled', False)
+        if config and isinstance(config, dict) and 'aws' in config:
+            self.config = config.get('aws', {})
+        elif config and isinstance(config, dict):
+            self.config = config
+        else:
+            self.config = kwargs
+
+        self.enabled = self.config.get('enabled', True) # Default to True if manually passed
         self.access_key = self.config.get('access_key_id')
         self.secret_key = self.config.get('secret_access_key')
         self.region = self.config.get('region', 'us-east-1')

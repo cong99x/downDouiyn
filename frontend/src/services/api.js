@@ -10,7 +10,7 @@ import axios from 'axios';
 // Recommend using vite proxy in dev to keep this relative
 const apiClient = axios.create({
     baseURL: '/api',
-    timeout: 60000, // 60 seconds for video downloads
+    timeout: 300000, // 300 seconds (5 minutes) for video downloads
     headers: {
         'Content-Type': 'application/json'
     }
@@ -101,7 +101,44 @@ export const deleteFile = async (filename) => {
  * @returns {string} Stream URL
  */
 export const getVideoStreamUrl = (filename) => {
-    return `/api/files/${encodeURIComponent(filename)}/stream`;
+    return `/api/files/stream?path=${encodeURIComponent(filename)}`;
+};
+
+/**
+ * Get video download URL
+ * @param {string} filename - Name of the file
+ * @returns {string} Download URL
+ */
+export const getFileDownloadUrl = (filename) => {
+    return `/api/files/download?path=${encodeURIComponent(filename)}`;
+};
+
+// Auth APIs
+export const getLoginQr = async () => {
+    try {
+        const response = await apiClient.get('/auth/qr');
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || { status: 'error', message: error.message };
+    }
+};
+
+export const getAuthStatus = async () => {
+    try {
+        const response = await apiClient.get('/auth/status');
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || { status: 'error', message: error.message };
+    }
+};
+
+export const stopLogin = async () => {
+    try {
+        const response = await apiClient.post('/auth/logout');
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || { status: 'error', message: error.message };
+    }
 };
 
 export default {
@@ -109,5 +146,9 @@ export default {
     getFiles,
     getFileInfo,
     deleteFile,
-    getVideoStreamUrl
+    getVideoStreamUrl,
+    getFileDownloadUrl,
+    getLoginQr,
+    getAuthStatus,
+    stopLogin
 };

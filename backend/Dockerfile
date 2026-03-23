@@ -1,9 +1,7 @@
-# Base image
-FROM python:3.10-slim
+# Use official Playwright Python image which has all browser dependencies pre-installed
+FROM mcr.microsoft.com/playwright/python:v1.40.0-jammy
 
 # Install system dependencies
-# ffmpeg is required for video processing
-# curl is useful for health checks
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     curl \
@@ -12,11 +10,13 @@ RUN apt-get update && apt-get install -y \
 # Set working directory
 WORKDIR /app
 
-# Copy requirements first to leverage Docker cache
+# Copy ALL requirements files
 COPY requirements.txt .
+COPY backend/requirements-backend.txt ./backend/
 
-# Install dependencies
+# Install both sets of dependencies
 RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r backend/requirements-backend.txt
 
 # Copy application code
 COPY . .
@@ -25,8 +25,9 @@ COPY . .
 EXPOSE 5000
 
 # Set environment variables
-ENV FLASK_APP=app.py
+ENV FLASK_APP=backend/app.py
 ENV FLASK_ENV=production
+ENV PYTHONPATH=/app
 
 # Command to run the application
-CMD ["python", "app.py"]
+CMD ["python", "backend/app.py"]

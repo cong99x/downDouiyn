@@ -23,6 +23,7 @@ from apiproxy.tiktok import tiktok_headers
 from apiproxy.tiktok import tiktok_headers
 from apiproxy.common import utils
 from utils.s3_uploader import S3Uploader
+from backend.services.progress_service import ProgressService
 import yaml
 
 logger = logging.getLogger(__name__)
@@ -45,6 +46,9 @@ class DownloadService:
         self.download_path = Path(download_path) if download_path else Path(os.getcwd()) / "Downloaded"
         self.download_path.mkdir(parents=True, exist_ok=True)
         
+        # Initialize Progress Service
+        self.progress_service = ProgressService()
+        
         # Initialize Douyin API client
         self.douyin = Douyin(database=True)
         
@@ -63,7 +67,8 @@ class DownloadService:
             cover=True,
             avatar=True,
             resjson=True,
-            folderstyle=True
+            folderstyle=True,
+            progress_callback=self.progress_service.update_progress
         )
         
         # Initialize TikTok Download manager with TikTok headers
@@ -75,7 +80,8 @@ class DownloadService:
             avatar=True,
             resjson=True,
             folderstyle=True,
-            custom_headers=self.tiktok_headers_copy
+            custom_headers=self.tiktok_headers_copy,
+            progress_callback=self.progress_service.update_progress
         )
         
         
@@ -121,25 +127,9 @@ class DownloadService:
     def download_video(self, url: str) -> Dict:
         """
         Download video from given URL.
-        
-        Args:
-            url: Douyin/TikTok video URL
-            
-        Returns:
-            Dictionary with download result:
-            {
-                'success': bool,
-                'message': str,
-                'data': {
-                    'title': str,
-                    'author': str,
-                    'filename': str,
-                    'file_path': str,
-                    'thumbnail': str
-                }
-            }
         """
         try:
+            self.progress_service.reset()
             logger.info(f"Starting download for URL: {url}")
             
             # Detect if it's a TikTok URL
@@ -221,6 +211,27 @@ class DownloadService:
                     'data': None
                 }
             
+            # Check prevent_download flag
+            prevent_download = video_data.get('prevent_download', False)
+            author_prevent_download = video_data.get('author', {}).get('prevent_download', False)
+            
+            if prevent_download or author_prevent_download:
+                author_name = video_data.get('author', {}).get('nickname', 'Unknown')
+                video_desc = video_data.get('desc', 'No title')
+                
+                logger.warning(f"Video has prevent_download enabled: {aweme_id}")
+                return {
+                    'success': False,
+                    'message': '⚠️ Tác giả đã bật chế độ ngăn tải xuống cho video này. Không thể tải video không watermark.',
+                    'data': {
+                        'title': video_desc,
+                        'author': author_name,
+                        'aweme_id': aweme_id,
+                        'prevent_download': True,
+                        'reason': 'Author has enabled download protection'
+                    }
+                }
+            
             # Create save path
             aweme_path = self.download_path / "aweme"
             aweme_path.mkdir(parents=True, exist_ok=True)
@@ -286,6 +297,27 @@ class DownloadService:
                     'success': False,
                     'message': 'Failed to fetch TikTok video information. The video may be private or unavailable.',
                     'data': None
+                }
+            
+            # Check prevent_download flag for TikTok
+            prevent_download = video_data.get('prevent_download', False)
+            author_prevent_download = video_data.get('author', {}).get('prevent_download', False)
+            
+            if prevent_download or author_prevent_download:
+                author_name = video_data.get('author', {}).get('nickname', 'Unknown')
+                video_desc = video_data.get('desc', 'No title')
+                
+                logger.warning(f"TikTok video has prevent_download enabled: {aweme_id}")
+                return {
+                    'success': False,
+                    'message': '⚠️ The author has enabled download protection for this TikTok video. Cannot download without watermark.',
+                    'data': {
+                        'title': video_desc,
+                        'author': author_name,
+                        'aweme_id': aweme_id,
+                        'prevent_download': True,
+                        'reason': 'Author has enabled download protection'
+                    }
                 }
             
             # Create save path

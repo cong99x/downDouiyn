@@ -16,7 +16,7 @@ from flask_cors import CORS
 # Add parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from backend.controllers import download_bp, file_bp, init_download_service, init_file_service
+from backend.controllers import download_bp, file_bp, auth_bp, init_download_service, init_file_service
 from backend.services import DownloadService, FileService
 
 # Configure logging
@@ -47,26 +47,59 @@ def create_app(config=None):
     # Apply custom configuration
     if config:
         app.config.update(config)
+    logger.info(f"Current working directory: {os.getcwd()}")
+    
+    # Load config from config.yml if it exists
+    root_dir = Path(__file__).resolve().parent.parent
+    config_path = root_dir / "config.yml"
+    config_yaml = {}
+    if config_path.exists():
+        try:
+            import yaml
+            with open(config_path, 'r', encoding='utf-8') as f:
+                config_yaml = yaml.safe_load(f)
+                logger.info("Loaded config from config.yml")
+        except Exception as e:
+            logger.error(f"Error loading config.yml: {e}")
     
     # Enable CORS for frontend communication
+    # In production (Docker), frontend and backend are proxied by Nginx on the same port,
+    # so CORS is technically not required. But we keep it for flexibility.
     CORS(app, resources={
         r"/api/*": {
-            "origins": ["http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5173"],
+            "origins": "*",  # Allow all origins for easier setup in VPS
             "methods": ["GET", "POST", "DELETE", "OPTIONS"],
             "allow_headers": ["Content-Type"]
         }
     })
     
-    # Get download path from environment or use default
-    download_path = os.environ.get('DOWNLOAD_PATH', 
-                                   os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'Downloaded'))
+    # Path resolution logic - Ultra-stable for Docker/Local
+    project_root = Path(__file__).resolve().parent.parent
+    
+    # Priority: Env > Config > Default
+    raw_path = os.environ.get('DOWNLOAD_PATH') or config_yaml.get('path')
+    if raw_path:
+        download_path = Path(raw_path)
+        if not download_path.is_absolute():
+            download_path = project_root / download_path
+    elif os.path.exists('/app/Downloaded'):
+        # In Docker, we want the root level Downloaded folder which is likely mapped
+        download_path = Path('/app/Downloaded')
+    else:
+        download_path = project_root / "Downloaded"
+        
+    download_path = download_path.resolve()
+    logger.info(f"Using absolute download path: {download_path}")
     
     # Get cookie from environment or config file
-    cookie = os.environ.get('DOUYIN_COOKIE', '')
+    cookie = os.environ.get('DOUYIN_COOKIE') or config_yaml.get('cookies', '')
     
-    # Initialize services
-    download_service = DownloadService(download_path=download_path, cookie=cookie)
-    file_service = FileService(download_path=download_path)
+    # Initialize services with absolute path strings
+    download_service = DownloadService(download_path=str(download_path), cookie=cookie)
+    file_service = FileService(download_path=str(download_path))
+    
+    logger.info(f"DownloadService path: {download_service.download_path}")
+    logger.info(f"FileService path: {file_service.download_path}")
     
     # Initialize controllers with services (Dependency Injection)
     init_download_service(download_service)
@@ -75,6 +108,7 @@ def create_app(config=None):
     # Register blueprints
     app.register_blueprint(download_bp)
     app.register_blueprint(file_bp)
+    app.register_blueprint(auth_bp)
     
     # Root endpoint
     @app.route('/')
@@ -85,7 +119,8 @@ def create_app(config=None):
             'status': 'running',
             'endpoints': {
                 'download': '/api/download',
-                'files': '/api/files'
+                'files': '/api/files',
+                'auth': '/api/auth'
             }
         })
     
