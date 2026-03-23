@@ -125,11 +125,11 @@ def create_app(config=None):
         })
     
     # Health check endpoint
-    @app.route('/health')
+    @app.route('/api/health')
     def health():
         return jsonify({
             'status': 'healthy',
-            'download_path': download_path
+            'download_path': str(download_path)
         })
     
     # Error handlers

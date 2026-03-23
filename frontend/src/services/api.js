@@ -5,11 +5,15 @@
 
 import axios from 'axios';
 
-// Create axios instance with base configuration
-// Use relative path for production (Nginx proxy) or absolute for local dev if needed
-// Recommend using vite proxy in dev to keep this relative
+// Determine API Base URL based on environment
+// LOCAL: Use localhost:5000
+// PRODUCTION: Use VITE_API_URL environment variable or fallback to /api
+const API_BASE_URL = import.meta.env.DEV 
+    ? 'http://localhost:5000/api' 
+    : (import.meta.env.VITE_API_URL || '/api');
+
 const apiClient = axios.create({
-    baseURL: '/api',
+    baseURL: API_BASE_URL,
     timeout: 300000, // 300 seconds (5 minutes) for video downloads
     headers: {
         'Content-Type': 'application/json'
@@ -101,7 +105,7 @@ export const deleteFile = async (filename) => {
  * @returns {string} Stream URL
  */
 export const getVideoStreamUrl = (filename) => {
-    return `/api/files/stream?path=${encodeURIComponent(filename)}`;
+    return `${API_BASE_URL}/files/stream?path=${encodeURIComponent(filename)}`;
 };
 
 /**
@@ -110,7 +114,7 @@ export const getVideoStreamUrl = (filename) => {
  * @returns {string} Download URL
  */
 export const getFileDownloadUrl = (filename) => {
-    return `/api/files/download?path=${encodeURIComponent(filename)}`;
+    return `${API_BASE_URL}/files/download?path=${encodeURIComponent(filename)}`;
 };
 
 // Auth APIs

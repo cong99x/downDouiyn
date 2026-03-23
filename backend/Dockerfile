@@ -29,5 +29,6 @@ ENV FLASK_APP=backend/app.py
 ENV FLASK_ENV=production
 ENV PYTHONPATH=/app
 
-# Command to run the application
-CMD ["python", "backend/app.py"]
+# Command to run the application using Gunicorn for production
+# Using the factory pattern create_app()
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "--threads", "4", "--timeout", "300", "backend.app:create_app()"]
