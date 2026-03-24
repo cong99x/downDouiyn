@@ -75,19 +75,32 @@ def create_app(config=None):
     # Path resolution logic - Ultra-stable for Docker/Local
     project_root = Path(__file__).resolve().parent.parent
     
-    # Priority: Env > Config > Default
+    # Priority 1: Environment Variable
     raw_path = os.environ.get('DOWNLOAD_PATH') or config_yaml.get('path')
+    
     if raw_path:
         download_path = Path(raw_path)
         if not download_path.is_absolute():
             download_path = project_root / download_path
-    elif os.path.exists('/app/Downloaded'):
-        # In Docker, we want the root level Downloaded folder which is likely mapped
+    # Priority 2: Docker Environment Detection
+    elif os.path.exists('/app/Downloaded') or os.environ.get('RENDER'):
         download_path = Path('/app/Downloaded')
+    # Priority 3: Windows Default Local (C:\download tiktok)
+    elif os.name == 'nt':
+        download_path = Path("C:\\download tiktok")
+    # Priority 4: Development Default
     else:
         download_path = project_root / "Downloaded"
         
     download_path = download_path.resolve()
+    
+    # CREATE FOLDER IF NOT EXISTS
+    try:
+        download_path.mkdir(parents=True, exist_ok=True)
+        logger.info(f"Verified download directory exists: {download_path}")
+    except Exception as e:
+        logger.error(f"Could not create directory {download_path}: {e}")
+
     logger.info(f"Using absolute download path: {download_path}")
     
     # Get cookie from environment or config file

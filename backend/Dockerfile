@@ -21,6 +21,9 @@ RUN pip install --no-cache-dir -r backend/requirements-backend.txt
 # Copy application code
 COPY . .
 
+# Create persistent storage directory
+RUN mkdir -p /app/Downloaded && chmod 777 /app/Downloaded
+
 # Expose port
 EXPOSE 5000
 
