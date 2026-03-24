@@ -62,7 +62,7 @@
 
 <script>
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import { getAuthCookie, updateAuthCookie } from '../services/api';
 
 export default {
   name: 'AuthModal',
@@ -76,9 +76,9 @@ export default {
 
     const fetchCurrentCookie = async () => {
       try {
-        const response = await axios.get('/api/auth/cookie');
-        if (response.data.status === 'success') {
-          currentCookie.value = response.data.data.cookie_preview;
+        const data = await getAuthCookie();
+        if (data.status === 'success') {
+          currentCookie.value = data.data.cookie_preview;
         }
       } catch (err) {
         console.error('Error fetching current cookie:', err);
@@ -96,11 +96,9 @@ export default {
       message.value = '';
 
       try {
-        const response = await axios.post('/api/auth/cookie', {
-          cookie: cookieInput.value.trim()
-        });
+        const data = await updateAuthCookie(cookieInput.value.trim());
 
-        if (response.data.status === 'success') {
+        if (data.status === 'success') {
           message.value = '✅ Cập nhật Cookie thành công!';
           messageType.value = 'success';
           

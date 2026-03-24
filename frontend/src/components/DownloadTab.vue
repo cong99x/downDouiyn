@@ -105,7 +105,7 @@
 
 <script>
 import { ref } from 'vue';
-import { downloadVideo } from '../services/api';
+import { downloadVideo, API_BASE_URL } from '../services/api';
 
 export default {
   name: 'DownloadTab',
@@ -122,9 +122,7 @@ export default {
     const startProgressTracking = () => {
       if (eventSource) eventSource.close();
       
-      const protocol = window.location.protocol;
-      const host = window.location.host;
-      const sseUrl = `${protocol}//${host}/api/download/progress`;
+      const sseUrl = `${API_BASE_URL}/download/progress`;
       
       eventSource = new EventSource(sseUrl);
       

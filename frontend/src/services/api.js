@@ -6,11 +6,28 @@
 import axios from 'axios';
 
 // Determine API Base URL based on environment
-// LOCAL: Use localhost:5000
-// PRODUCTION: Use VITE_API_URL environment variable or fallback to /api
-const API_BASE_URL = import.meta.env.DEV 
-    ? 'http://localhost:5000/api' 
-    : (import.meta.env.VITE_API_URL || '/api');
+const getBaseUrl = () => {
+    if (import.meta.env.DEV) {
+        return 'http://localhost:5000/api';
+    }
+    
+    let url = import.meta.env.VITE_API_URL || '';
+    
+    // If empty, use relative path /api (assume same domain proxy)
+    if (!url) return '/api';
+    
+    // Ensure URL doesn't end with slash before check
+    url = url.replace(/\/$/, '');
+    
+    // If URL is provided but missing the /api suffix, append it
+    if (!url.endsWith('/api')) {
+        return `${url}/api`;
+    }
+    
+    return url;
+};
+
+export const API_BASE_URL = getBaseUrl();
 
 const apiClient = axios.create({
     baseURL: API_BASE_URL,
@@ -118,6 +135,24 @@ export const getFileDownloadUrl = (filename) => {
 };
 
 // Auth APIs
+export const getAuthCookie = async () => {
+    try {
+        const response = await apiClient.get('/auth/cookie');
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || { status: 'error', message: error.message };
+    }
+};
+
+export const updateAuthCookie = async (cookie) => {
+    try {
+        const response = await apiClient.post('/auth/cookie', { cookie });
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || { status: 'error', message: error.message };
+    }
+};
+
 export const getLoginQr = async () => {
     try {
         const response = await apiClient.get('/auth/qr');

@@ -63,13 +63,12 @@ def create_app(config=None):
             logger.error(f"Error loading config.yml: {e}")
     
     # Enable CORS for frontend communication
-    # In production (Docker), frontend and backend are proxied by Nginx on the same port,
-    # so CORS is technically not required. But we keep it for flexibility.
+    # We apply CORS to all routes (/*) to ensure even error responses have proper headers
     CORS(app, resources={
-        r"/api/*": {
+        r"/*": {
             "origins": "*",  # Allow all origins for easier setup in VPS
-            "methods": ["GET", "POST", "DELETE", "OPTIONS"],
-            "allow_headers": ["Content-Type"]
+            "methods": ["GET", "POST", "DELETE", "PUT", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization", "X-Requested-With", "Accept"]
         }
     })
     
