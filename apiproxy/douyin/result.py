@@ -4,6 +4,9 @@
 
 import time
 import copy
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Result(object):
@@ -268,12 +271,23 @@ class Result(object):
                 # 根据 uri 获取 1080p 视频
                 if item == "play_addr":
                     # 支持两种数据结构:
-                    # 1. API响应: dataRaw["bit_rate"][0]["play_addr"]
+                    # 1. API响应: dataRaw["bit_rate"] list (选择最高码率)
                     # 2. SSR数据: dataRaw["play_addr"] (直接包含 uri 和 url_list)
                     if "bit_rate" in dataRaw and dataRaw["bit_rate"]:
-                        # API 响应结构
-                        dataNew[item]["uri"] = dataRaw["bit_rate"][0]["play_addr"]["uri"]
-                        dataNew[item]["url_list"] = copy.deepcopy(dataRaw["bit_rate"][0]["play_addr"]["url_list"])
+                        # API 响应结构: 选择码率最高的 (BitRate)
+                        try:
+                            # 按照 bit_rate 降序排序，取第一个 (最高的)
+                            best_bitrate = sorted(dataRaw["bit_rate"], key=lambda x: x.get('bit_rate', 0), reverse=True)[0]
+                            play_addr_data = best_bitrate.get("play_addr", {})
+                            
+                            dataNew[item]["uri"] = play_addr_data.get("uri", "")
+                            # 使用最高质量的 URL 列表
+                            dataNew[item]["url_list"] = copy.deepcopy(play_addr_data.get("url_list", []))
+                            logger.info(f"Selected highest bitrate: {best_bitrate.get('bit_rate', 'unknown')}")
+                        except Exception as e:
+                            # Fallback if sorting fails
+                            dataNew[item]["uri"] = dataRaw["bit_rate"][0]["play_addr"]["uri"]
+                            dataNew[item]["url_list"] = copy.deepcopy(dataRaw["bit_rate"][0]["play_addr"]["url_list"])
                     elif "play_addr" in dataRaw:
                         # SSR 数据结构 (mobile share page)
                         play_addr_data = dataRaw["play_addr"]
