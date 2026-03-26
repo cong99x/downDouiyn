@@ -83,9 +83,12 @@
               <button class="btn btn-secondary" @click="clearResult">
                 Download Another
               </button>
-              <button class="btn btn-primary" @click="$emit('switch-tab', 'management')">
-                View Downloads
-              </button>
+            </div>
+            
+            <!-- iOS Hint -->
+            <div v-if="isMobileDevice" class="mobile-hint">
+              <p>💡 Tip: If download doesn't start, <strong>long-press</strong> and select <strong>"Download Linked File"</strong></p>
+              <a :href="downloadUrl" class="direct-link">Manual Download Link</a>
             </div>
           </div>
         </div>
@@ -107,7 +110,7 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { downloadVideo, API_BASE_URL, getFileDownloadUrl } from '../services/api';
 
 export default {
@@ -120,7 +123,14 @@ export default {
     const downloadResult = ref(null);
     const downloadProgress = ref(0);
     const progressStatus = ref('Preparing...');
+    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     let eventSource = null;
+
+    const downloadUrl = computed(() => {
+      if (!downloadResult.value) return '';
+      const path = downloadResult.value.file_path || downloadResult.value.filename;
+      return getFileDownloadUrl(path);
+    });
 
     const startProgressTracking = () => {
       if (eventSource) eventSource.close();
@@ -240,6 +250,8 @@ export default {
       downloadResult,
       downloadProgress,
       progressStatus,
+      isMobileDevice,
+      downloadUrl,
       handleDownload,
       clearResult,
       manualDownload
@@ -249,6 +261,22 @@ export default {
 </script>
 
 <style scoped>
+.mobile-hint {
+  margin-top: var(--spacing-md);
+  text-align: center;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  background: var(--color-bg-tertiary);
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-sm);
+}
+
+.direct-link {
+  display: block;
+  margin-top: var(--spacing-xs);
+  color: var(--color-primary-light);
+  text-decoration: underline;
+}
 .download-tab {
   padding: var(--spacing-lg);
   max-width: 800px;

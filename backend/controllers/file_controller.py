@@ -214,10 +214,11 @@ def download_file():
             abs_path = str(file_path.absolute())
             logger.info(f"Downloading file: {abs_path}")
             
-            # Use conditional=True for byte-range support (vital for mobile/Safari)
+            # Use application/octet-stream to FORCE download on iOS Safari
+            # If we use video/mp4, iOS often tries to play it instead of downloading
             return send_file(
                 abs_path,
-                mimetype='video/mp4',
+                mimetype='application/octet-stream',
                 as_attachment=True,
                 download_name=file_path.name,
                 conditional=True
