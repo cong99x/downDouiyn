@@ -277,7 +277,7 @@ class FileService:
     
     def get_file_path(self, filename: str) -> Optional[Path]:
         """
-        Get absolute path to a file.
+        Get absolute path to a file, with security checks.
         Args:
             filename: Name of the file or relative path (e.g. 'aweme/vid.mp4')
         Returns:
@@ -288,17 +288,25 @@ class FileService:
             
             # 1. Try as a relative path from download_path
             path = (self.download_path / filename).resolve()
+            
             if path.exists() and path.is_file():
                 # Security check: ensure the file is inside the download_path
-                if str(path).startswith(str(self.download_path)):
+                # is_relative_to requires Python 3.9+, otherwise use simple check
+                try:
+                    path.relative_to(self.download_path)
                     return path
+                except ValueError:
+                    logger.warning(f"Security: Blocked access to path outside download folder: {path}")
+                    return None
             
             # 2. Try as a pure filename (search for it if direct path fails)
+            logger.info(f"File not found at direct path {path}, searching recursively...")
             just_filename = os.path.basename(filename)
             for video_file in self.download_path.rglob("*"):
                 if video_file.is_file() and video_file.name == just_filename:
                     return video_file.resolve()
                     
+            logger.warning(f"File not found anywhere in {self.download_path}: {filename}")
             return None
         except Exception as e:
             logger.error(f"Error getting file path for {filename}: {str(e)}")

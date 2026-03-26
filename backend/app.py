@@ -92,26 +92,24 @@ def create_app(config=None):
     else:
         download_path = project_root / "Downloaded"
         
+    # Ensure the path is absolute and resolved (crucial for path matching)
     download_path = download_path.resolve()
     
     # CREATE FOLDER IF NOT EXISTS
     try:
         download_path.mkdir(parents=True, exist_ok=True)
-        logger.info(f"Verified download directory exists: {download_path}")
+        logger.info(f"Verified download directory: {download_path}")
     except Exception as e:
         logger.error(f"Could not create directory {download_path}: {e}")
-
-    logger.info(f"Using absolute download path: {download_path}")
     
     # Get cookie from environment or config file
     cookie = os.environ.get('DOUYIN_COOKIE') or config_yaml.get('cookies', '')
     
-    # Initialize services with absolute path strings
+    # Initialize services with absolute path strings (resolved)
     download_service = DownloadService(download_path=str(download_path), cookie=cookie)
     file_service = FileService(download_path=str(download_path))
     
-    logger.info(f"DownloadService path: {download_service.download_path}")
-    logger.info(f"FileService path: {file_service.download_path}")
+    logger.info(f"Services initialized with path: {download_path}")
     
     # Initialize controllers with services (Dependency Injection)
     init_download_service(download_service)

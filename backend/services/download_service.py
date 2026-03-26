@@ -43,7 +43,11 @@ class DownloadService:
             download_path: Path to save downloaded files
             cookie: Optional cookie string for authentication
         """
-        self.download_path = Path(download_path) if download_path else Path(os.getcwd()) / "Downloaded"
+        if download_path:
+            self.download_path = Path(download_path).resolve()
+        else:
+            self.download_path = (Path(os.getcwd()) / "Downloaded").resolve()
+            
         self.download_path.mkdir(parents=True, exist_ok=True)
         
         # Initialize Progress Service
