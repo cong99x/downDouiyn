@@ -140,18 +140,22 @@ class DownloadService:
             is_tiktok = 'tiktok.com' in url.lower() or 'vt.tiktok.com' in url.lower()
             
             if is_tiktok:
-                logger.info("Detected TikTok URL, using TikTok API")
+                logger.info("Detected TikTok URL, extracting link...")
+                # Extract clean link from text (crucial for mobile share strings)
+                share_link = self.tiktok.getShareLink(url) or url
+                logger.info(f"Clean TikTok link: {share_link}")
+                
                 # Get key type and ID from TikTok URL
-                key_type, key = self.tiktok.getKey(url)
+                key_type, key = self.tiktok.getKey(share_link)
                 logger.info(f"TikTok Key type: {key_type}, Key: {key}")
                 
-                if key_type == "aweme":
+                if key_type == "aweme" and key:
                     return self._download_tiktok_video(key)
                 else:
                     return {
                         'success': False,
-                        'message': f'Unsupported TikTok URL type: {key_type}. Please use a direct video link.',
-                        'data': None
+                        'message': f'Unsupported or invalid TikTok URL. Please use a direct link.',
+                        'data': {'key_type': key_type}
                     }
             else:
                 # Douyin URL handling
@@ -256,8 +260,16 @@ class DownloadService:
             
 
             
+            if not video_filename:
+                logger.error(f"Download completed but video file not found for aweme_id: {aweme_id}")
+                return {
+                    'success': False,
+                    'message': 'Download completed but the file could not be located on the server.',
+                    'data': None
+                }
+
             # S3 Upload
-            if self.s3_uploader and self.s3_uploader.enabled and video_filename:
+            if self.s3_uploader and self.s3_uploader.enabled:
                 self._upload_to_s3(aweme_path, video_filename)
 
             return {
@@ -268,7 +280,7 @@ class DownloadService:
                     'author': author_name,
                     'aweme_id': aweme_id,
                     'filename': video_filename,
-                    'file_path': str((aweme_path / video_filename).relative_to(self.download_path)) if video_filename else None,
+                    'file_path': str((aweme_path / video_filename).relative_to(self.download_path)).replace('\\', '/') if video_filename else None,
                     'thumbnail': video_data.get('video', {}).get('cover', {}).get('url_list', [None])[0]
                 }
             }
@@ -343,13 +355,16 @@ class DownloadService:
             author_name = video_data.get('author', {}).get('nickname', 'Unknown')
             video_desc = video_data.get('desc', 'No title')
             
-            # Find the downloaded file
-            video_filename = self._find_downloaded_file(aweme_path, aweme_id)
-            
-
+            if not video_filename:
+                logger.error(f"TikTok download completed but video file not found for aweme_id: {aweme_id}")
+                return {
+                    'success': False,
+                    'message': 'TikTok download failed or file could not be located on the server.',
+                    'data': None
+                }
 
             # S3 Upload
-            if self.s3_uploader and self.s3_uploader.enabled and video_filename:
+            if self.s3_uploader and self.s3_uploader.enabled:
                 self._upload_to_s3(aweme_path, video_filename)
                 
             return {
@@ -360,7 +375,7 @@ class DownloadService:
                     'author': author_name,
                     'aweme_id': aweme_id,
                     'filename': video_filename,
-                    'file_path': str((aweme_path / video_filename).relative_to(self.download_path)) if video_filename else None,
+                    'file_path': str((aweme_path / video_filename).relative_to(self.download_path)).replace('\\', '/') if video_filename else None,
                     'thumbnail': video_data.get('video', {}).get('cover', {}).get('url_list', [None])[0]
                 }
             }
@@ -385,19 +400,32 @@ class DownloadService:
             Filename if found, None otherwise
         """
         try:
-            # Look for video files (mp4)
-            for file in directory.glob("*.mp4"):
+            # 1. Look for video files (mp4) - Primary (Recursive)
+            for file in directory.rglob("*.mp4"):
                 if aweme_id in file.name:
-                    return file.name
+                    return str(file.relative_to(directory))
             
-            # If not found, return the most recent mp4 file
-            mp4_files = list(directory.glob("*.mp4"))
-            if mp4_files:
-                latest_file = max(mp4_files, key=lambda f: f.stat().st_mtime)
-                return latest_file.name
+            # 2. Look for image files (for TikTok Photo posts/galleries)
+            for file in directory.rglob("*.jpeg"):
+                if aweme_id in file.name:
+                    return str(file.relative_to(directory))
+            for file in directory.rglob("*.jpg"):
+                if aweme_id in file.name:
+                    return str(file.relative_to(directory))
+
+            # 3. Fallback: return the most recent file of any relevant type in any subfolder
+            logger.info(f"ID-based search failed, looking for latest media file in {directory}...")
+            all_media = list(directory.rglob("*.*"))
+            # Filter for media types
+            media_files = [f for f in all_media if f.suffix.lower() in ['.mp4', '.jpeg', '.jpg', '.png', '.mp3']]
+            
+            if media_files:
+                latest_file = max(media_files, key=lambda f: f.stat().st_mtime)
+                # Return path relative to the search directory
+                return str(latest_file.relative_to(directory))
                 
         except Exception as e:
-            logger.error(f"Error finding downloaded file: {str(e)}")
+            logger.error(f"Error finding downloaded file in {directory}: {str(e)}")
         
         return None
     

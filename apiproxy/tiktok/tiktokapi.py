@@ -49,30 +49,37 @@ class TikTokApi(object):
             # These always need redirection to find the actual video ID
             if any(domain in url for domain in ['vt.tiktok.com', 'v.tiktok.com', 'tiktok.com/t/']):
                 logger.info(f"Short TikTok URL detected: {url}, following redirects...")
-                r = self.session.get(url, allow_redirects=True, timeout=self.timeout, stream=True)
+                # Use a proper User-Agent to avoid getting stuck in redirects to 'Download app' pages
+                headers = copy.deepcopy(self.headers)
+                headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+                r = self.session.get(url, allow_redirects=True, timeout=self.timeout, stream=True, headers=headers)
                 url = r.url
                 logger.info(f"Redirected to: {url}")
 
-            # 1. Pattern for video: tiktok.com/@user/video/732891238123
-            video_match = re.search(r'video/(\d+)', url)
-            if video_match:
-                key = video_match.group(1)
+            # 1. Pattern for items (video or photo): tiktok.com/@user/video/732891238123 or tiktok.com/@user/photo/732891238123
+            item_match = re.search(r'/(video|photo|v)/(\d+)', url)
+            if item_match:
+                key = item_match.group(2)
                 key_type = "aweme"
                 return key_type, key
 
-            # 2. Pattern for mobile v/ format: tiktok.com/v/732891238123
-            v_match = re.search(r'/v/(\d+)', url)
-            if v_match:
-                key = v_match.group(1)
+            # 2. Check for just a sequence of digits (common in some short shared links after some redirects)
+            id_match = re.search(r'/(7\d{17,19})', url)
+            if id_match:
+                key = id_match.group(1)
                 key_type = "aweme"
                 return key_type, key
 
-            # 3. Pattern for user: tiktok.com/@username
-            user_match = re.search(r'@([a-zA-Z0-9._-]+)', url)
+            # 3. Pattern for user: tiktok.com/@username (Only if it's not a video/photo)
+            # Ensure it ends or has a separator so it doesn't match @user in @user/video/id
+            user_match = re.search(r'@([a-zA-Z0-9._-]+)(?:$|\?|/)', url)
             if user_match:
                 key = user_match.group(1)
                 key_type = "user"
-                return key_type, key
+                # If there's something else after @user/ that's NOT video/photo, keep looking 
+                # but for now we prioritize it if it reached here
+                if '/video/' not in url and '/photo/' not in url:
+                    return key_type, key
 
         except Exception as e:
             logger.error(f'TikTok link parsing failed: {e}')
