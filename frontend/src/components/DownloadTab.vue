@@ -77,6 +77,9 @@
             </div>
 
             <div class="result-actions">
+              <button class="btn btn-success" @click="manualDownload">
+                📥 Download Video
+              </button>
               <button class="btn btn-secondary" @click="clearResult">
                 Download Another
               </button>
@@ -105,7 +108,7 @@
 
 <script>
 import { ref } from 'vue';
-import { downloadVideo, API_BASE_URL } from '../services/api';
+import { downloadVideo, API_BASE_URL, getFileDownloadUrl } from '../services/api';
 
 export default {
   name: 'DownloadTab',
@@ -153,6 +156,22 @@ export default {
       }
     };
 
+    const triggerAutoDownload = (fileInfo) => {
+      // Use the filename/path returned from backend
+      // downloadResult.file_path in background was absolute, 
+      // but getFileDownloadUrl handles both relative and absolute if same domain
+      // Better to use filename directly or ensure we pass relative path
+      const downloadPath = fileInfo.file_path || fileInfo.filename;
+      const url = getFileDownloadUrl(downloadPath);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', fileInfo.filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+
     const handleDownload = async () => {
       if (!videoUrl.value.trim()) {
         errorMessage.value = 'Please enter a video URL';
@@ -193,6 +212,12 @@ export default {
       errorMessage.value = '';
     };
 
+    const manualDownload = () => {
+      if (downloadResult.value) {
+        triggerAutoDownload(downloadResult.value);
+      }
+    };
+
     return {
       videoUrl,
       isDownloading,
@@ -201,7 +226,8 @@ export default {
       downloadProgress,
       progressStatus,
       handleDownload,
-      clearResult
+      clearResult,
+      manualDownload
     };
   }
 };

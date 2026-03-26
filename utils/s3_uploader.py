@@ -112,3 +112,26 @@ class S3Uploader:
         except Exception as e:
             logger.error(f"Failed to list S3 files: {e}")
             return []
+    def get_presigned_url(self, object_name, expiration=3600):
+        """
+        Generate a presigned URL to share an S3 object
+        :param object_name: string
+        :param expiration: Time in seconds for the presigned URL to remain valid
+        :return: Presigned URL as string. If error, returns None.
+        """
+        if not self.enabled or not self.s3_client:
+            return None
+
+        # Add prefix if configured
+        if self.prefix and not object_name.startswith(self.prefix):
+            object_name = f"{self.prefix.rstrip('/')}/{object_name.lstrip('/')}"
+
+        try:
+            response = self.s3_client.generate_presigned_url('get_object',
+                                                            Params={'Bucket': self.bucket,
+                                                                    'Key': object_name},
+                                                            ExpiresIn=expiration)
+            return response
+        except ClientError as e:
+            logger.error(f"Failed to generate presigned URL: {e}")
+            return None

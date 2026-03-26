@@ -220,6 +220,15 @@ def download_file():
                 download_name=file_path.name
             )
         
+        # If not found locally, try to get S3 URL if possible
+        if file_service.s3_uploader and file_service.s3_uploader.enabled:
+            # Assume path_param might be the S3 key
+            s3_url = file_service.s3_uploader.get_presigned_url(path_param)
+            if s3_url:
+                logger.info(f"Redirecting download to S3: {s3_url}")
+                from flask import redirect
+                return redirect(s3_url)
+        
         logger.warning(f"File not found for download: {path_param}")
         return jsonify({'status': 'error', 'message': f'File not found: {path_param}'}), 404
     except Exception as e:

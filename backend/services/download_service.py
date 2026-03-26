@@ -264,7 +264,7 @@ class DownloadService:
                     'author': author_name,
                     'aweme_id': aweme_id,
                     'filename': video_filename,
-                    'file_path': str(aweme_path / video_filename) if video_filename else None,
+                    'file_path': str((aweme_path / video_filename).relative_to(self.download_path)) if video_filename else None,
                     'thumbnail': video_data.get('video', {}).get('cover', {}).get('url_list', [None])[0]
                 }
             }
@@ -356,7 +356,7 @@ class DownloadService:
                     'author': author_name,
                     'aweme_id': aweme_id,
                     'filename': video_filename,
-                    'file_path': str(aweme_path / video_filename) if video_filename else None,
+                    'file_path': str((aweme_path / video_filename).relative_to(self.download_path)) if video_filename else None,
                     'thumbnail': video_data.get('video', {}).get('cover', {}).get('url_list', [None])[0]
                 }
             }

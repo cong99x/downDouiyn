@@ -183,6 +183,16 @@ p {
   box-shadow: var(--shadow-lg);
 }
 
+.btn-success {
+  background: linear-gradient(135deg, var(--color-success) 0%, hsl(145, 70%, 40%) 100%);
+  color: white;
+}
+
+.btn-success:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
 .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
