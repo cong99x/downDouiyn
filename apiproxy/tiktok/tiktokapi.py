@@ -45,22 +45,32 @@ class TikTokApi(object):
         key_type = None
 
         try:
-            # Handle short URLs (vt.tiktok.com)
-            if 'vt.tiktok.com' in url or 'v.tiktok.com' in url:
-                r = self.session.head(url, allow_redirects=True, timeout=self.timeout)
+            # Handle short URLs (vt.tiktok.com, v.tiktok.com, tiktok.com/t/)
+            # These always need redirection to find the actual video ID
+            if any(domain in url for domain in ['vt.tiktok.com', 'v.tiktok.com', 'tiktok.com/t/']):
+                logger.info(f"Short TikTok URL detected: {url}, following redirects...")
+                r = self.session.get(url, allow_redirects=True, timeout=self.timeout, stream=True)
                 url = r.url
+                logger.info(f"Redirected to: {url}")
 
-            # Pattern for video: tiktok.com/@user/video/732891238123
+            # 1. Pattern for video: tiktok.com/@user/video/732891238123
             video_match = re.search(r'video/(\d+)', url)
             if video_match:
                 key = video_match.group(1)
                 key_type = "aweme"
                 return key_type, key
 
-            # Pattern for user: tiktok.com/@username
+            # 2. Pattern for mobile v/ format: tiktok.com/v/732891238123
+            v_match = re.search(r'/v/(\d+)', url)
+            if v_match:
+                key = v_match.group(1)
+                key_type = "aweme"
+                return key_type, key
+
+            # 3. Pattern for user: tiktok.com/@username
             user_match = re.search(r'@([a-zA-Z0-9._-]+)', url)
             if user_match:
-                key = user_match.group(1) # username works as key for some TikTok APIs
+                key = user_match.group(1)
                 key_type = "user"
                 return key_type, key
 
