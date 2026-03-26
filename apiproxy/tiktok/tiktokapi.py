@@ -231,32 +231,23 @@ class TikTokApi(object):
         self.result.awemeDict["aweme_id"] = item.get("id")
         self.result.awemeDict["desc"] = item.get("desc")
         self.result.awemeDict["create_time"] = time.strftime("%Y-%m-%d %H.%M.%S", time.localtime(int(item.get("createTime", 0))))
-        # Detect type: favor video if playAddr exists, otherwise photo post
-        video = item.get("video", {})
-        play_url = video.get("playAddr") or video.get("downloadAddr")
+        # Force video-only mode (reverting gallery support)
+        self.result.awemeDict["awemeType"] = 0
         
-        # If there's a valid video URL, we can treat it as a video (awemeType = 0)
-        # Even if it's an imagePost, if TikTok provides a rendered slideshow video, we want that.
-        if play_url:
-            self.result.awemeDict["awemeType"] = 0
-            logger.info(f"Found video URL for TikTok post, prioritizing video over images.")
-        else:
-            self.result.awemeDict["awemeType"] = 1 if item.get('imagePost') else 0
-        
-        # Video
+        # Video metadata extraction
         video = item.get("video", {})
         play_url = video.get("playAddr") or video.get("downloadAddr")
         if play_url:
             self.result.awemeDict["video"]["play_addr"]["url_list"] = [play_url]
             
-        # Author
+        # Author metadata
         author = item.get("author", {})
         self.result.awemeDict["author"]["nickname"] = author.get("nickname")
         self.result.awemeDict["author"]["unique_id"] = author.get("uniqueId")
         self.result.awemeDict["author"]["sec_uid"] = author.get("secUid")
         self.result.awemeDict["author"]["avatar_thumb"]["url_list"] = [author.get("avatarThumb", "")]
         
-        # Music & Images for TikTok Photo Posts
+        # Music metadata
         music = item.get("music", {})
         music_url = music.get("playUrl")
         if music_url:
@@ -264,22 +255,13 @@ class TikTokApi(object):
         self.result.awemeDict["music"]["title"] = music.get("title")
         self.result.awemeDict["music"]["author"] = music.get("authorName")
         
-        # Images (for Photo Posts)
-        image_post = item.get("imagePost", {})
-        if image_post:
-            images = image_post.get("images", [])
-            for img in images:
-                # TikTok image structure: displayAddr or main_url
-                img_url = img.get("displayAddr", {}).get("url_list", [None])[0] or \
-                          img.get("main_url", {}).get("url_list", [None])[0] or \
-                          img.get("thumbnail", {}).get("url_list", [None])[0]
-                
-                if img_url:
-                    self.result.awemeDict["images"].append({"url_list": [img_url]})
-            
-            # If we found images, ensure type is 1 (Gallery)
-            if self.result.awemeDict["images"]:
-                self.result.awemeDict["awemeType"] = 1
+        # Cover metadata
+        cover = video.get("cover")
+        if cover:
+            self.result.awemeDict["video"]["cover"]["url_list"] = [cover]
+        dynamic_cover = video.get("dynamicCover")
+        if dynamic_cover:
+            self.result.awemeDict["video"]["dynamic_cover"]["url_list"] = [dynamic_cover]
         
         # Cover
         cover = video.get("cover")

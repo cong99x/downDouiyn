@@ -9,7 +9,6 @@ Single Responsibility: Handle all download-related business logic.
 import os
 import sys
 import logging
-import zipfile
 from pathlib import Path
 from typing import Optional, Dict
 
@@ -273,33 +272,9 @@ class DownloadService:
             if self.s3_uploader and self.s3_uploader.enabled:
                 self._upload_to_s3(aweme_path, video_filename)
 
-            # Handle Galleries (awemeType == 1) by zipping
-            if video_data.get('awemeType') == 1 and video_filename:
-                try:
-                    # video_filename is like 'FOLDER_NAME/image_0.jpeg'
-                    rel_parts = Path(video_filename).parts
-                    if len(rel_parts) > 1:
-                        folder_name = rel_parts[0]
-                        abs_folder_path = aweme_path / folder_name
-                        zip_filename = f"{folder_name}.zip"
-                        abs_zip_path = aweme_path / zip_filename
-                        
-                        logger.info(f"Zipping gallery folder: {abs_folder_path} to {abs_zip_path}")
-                        with zipfile.ZipFile(abs_zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-                            for root, dirs, files in os.walk(abs_folder_path):
-                                for file in files:
-                                    file_path = os.path.join(root, file)
-                                    zipf.write(file_path, os.path.relpath(file_path, abs_folder_path))
-                        
-                        video_filename = zip_filename
-                    else:
-                        logger.warning("Could not determine gallery folder for zipping")
-                except Exception as ze:
-                    logger.error(f"Failed to zip gallery: {ze}")
-
             return {
                 'success': True,
-                'message': 'Gallery/Video downloaded successfully',
+                'message': 'Video downloaded successfully',
                 'data': {
                     'title': video_desc,
                     'author': author_name,
@@ -395,30 +370,9 @@ class DownloadService:
             if self.s3_uploader and self.s3_uploader.enabled:
                 self._upload_to_s3(aweme_path, video_filename)
                 
-            # Handle TikTok Galleries by zipping
-            if video_data.get('awemeType') == 1 and video_filename:
-                try:
-                    rel_parts = Path(video_filename).parts
-                    if len(rel_parts) > 1:
-                        folder_name = rel_parts[0]
-                        abs_folder_path = aweme_path / folder_name
-                        zip_filename = f"{folder_name}.zip"
-                        abs_zip_path = aweme_path / zip_filename
-                        
-                        logger.info(f"Zipping TikTok gallery: {abs_folder_path} to {abs_zip_path}")
-                        with zipfile.ZipFile(abs_zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-                            for root, dirs, files in os.walk(abs_folder_path):
-                                for file in files:
-                                    file_path = os.path.join(root, file)
-                                    zipf.write(file_path, os.path.relpath(file_path, abs_folder_path))
-                        
-                        video_filename = zip_filename
-                except Exception as ze:
-                    logger.error(f"Failed to zip TikTok gallery: {ze}")
-
             return {
                 'success': True,
-                'message': 'TikTok video/gallery downloaded successfully',
+                'message': 'TikTok video downloaded successfully',
                 'data': {
                     'title': video_desc,
                     'author': author_name,
