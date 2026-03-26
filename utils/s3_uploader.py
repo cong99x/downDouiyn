@@ -127,9 +127,15 @@ class S3Uploader:
             object_name = f"{self.prefix.rstrip('/')}/{object_name.lstrip('/')}"
 
         try:
+            # Force download by setting Content-Disposition in the presigned URL
+            params = {
+                'Bucket': self.bucket,
+                'Key': object_name,
+                'ResponseContentDisposition': f'attachment; filename="{os.path.basename(object_name)}"'
+            }
+            
             response = self.s3_client.generate_presigned_url('get_object',
-                                                            Params={'Bucket': self.bucket,
-                                                                    'Key': object_name},
+                                                            Params=params,
                                                             ExpiresIn=expiration)
             return response
         except ClientError as e:

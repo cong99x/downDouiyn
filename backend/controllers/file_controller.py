@@ -213,11 +213,14 @@ def download_file():
         if file_path and file_path.exists() and file_path.is_file():
             abs_path = str(file_path.absolute())
             logger.info(f"Downloading file: {abs_path}")
+            
+            # Use conditional=True for byte-range support (vital for mobile/Safari)
             return send_file(
                 abs_path,
                 mimetype='video/mp4',
                 as_attachment=True,
-                download_name=file_path.name
+                download_name=file_path.name,
+                conditional=True
             )
         
         # If not found locally, try to get S3 URL if possible

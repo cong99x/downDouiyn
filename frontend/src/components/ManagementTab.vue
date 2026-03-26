@@ -178,12 +178,22 @@ export default {
 
     const downloadVideo = (video) => {
       const url = getFileDownloadUrl(video.file_path);
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', video.filename);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const filename = video.filename || 'video.mp4';
+      
+      console.log('Manually triggering download for:', url);
+      
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      if (isMobile) {
+        window.location.href = url;
+      } else {
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
     };
 
     onMounted(() => {

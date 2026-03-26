@@ -157,19 +157,29 @@ export default {
     };
 
     const triggerAutoDownload = (fileInfo) => {
-      // Use the filename/path returned from backend
-      // downloadResult.file_path in background was absolute, 
-      // but getFileDownloadUrl handles both relative and absolute if same domain
-      // Better to use filename directly or ensure we pass relative path
+      if (!fileInfo) return;
+      
       const downloadPath = fileInfo.file_path || fileInfo.filename;
       const url = getFileDownloadUrl(downloadPath);
       
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', fileInfo.filename);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      console.log('Triggering download for:', url);
+      
+      // On mobile, window.location.href is more reliable than a.click()
+      // for triggering system-level download dialogs, especially with redirects.
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      if (isMobile) {
+        // Direct assignment works better for S3 redirects on mobile browsers
+        window.location.href = url;
+      } else {
+        // Desktop can use the standard <a> tag approach
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', fileInfo.filename || 'video.mp4');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
     };
 
     const handleDownload = async () => {
@@ -195,6 +205,11 @@ export default {
           downloadResult.value = response.data;
           videoUrl.value = ''; // Clear input
           downloadProgress.value = 100;
+          
+          // Auto-trigger download after a short delay for better UX
+          setTimeout(() => {
+            triggerAutoDownload(response.data);
+          }, 800);
         } else {
           errorMessage.value = response.message || 'Download failed';
         }

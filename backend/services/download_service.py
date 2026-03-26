@@ -402,24 +402,29 @@ class DownloadService:
         logger.info("Cookie updated")
 
     def _upload_to_s3(self, directory: Path, video_filename: str):
-        """Upload video and related files to S3"""
+        """Upload video and related files to S3, preserving folder structure"""
         try:
             # Upload video
             video_uploaded = False
             video_path = directory / video_filename
+            
             if video_path.exists():
-                logger.info(f"Uploading video to S3: {video_filename}")
-                video_uploaded = self.s3_uploader.upload_file(str(video_path))
+                # Use relative path as object name to maintain structure in S3
+                # e.g. 'aweme/video_id.mp4'
+                rel_path = str(video_path.relative_to(self.download_path)).replace('\\', '/')
+                logger.info(f"Uploading video to S3 with key: {rel_path}")
+                video_uploaded = self.s3_uploader.upload_file(str(video_path), object_name=rel_path)
             
             # Find and upload related files (cover, music, json)
-            # Assuming they share the same stem or ID
             stem = Path(video_filename).stem
             for file in directory.glob(f"*{stem}*"):
                 if file.name == video_filename:
-                    continue # Already uploaded
+                    continue
                 
-                logger.info(f"Uploading related file to S3: {file.name}")
-                if self.s3_uploader.upload_file(str(file)):
+                # Also use relative path for related files
+                rel_file_path = str(file.relative_to(self.download_path)).replace('\\', '/')
+                logger.info(f"Uploading related file to S3 with key: {rel_file_path}")
+                if self.s3_uploader.upload_file(str(file), object_name=rel_file_path):
                     # Remove related file after upload
                     try:
                         os.remove(file)
@@ -428,7 +433,6 @@ class DownloadService:
                         logger.warning(f"Failed to delete local file {file.name}: {ex}")
 
             # Remove video file after upload
-            video_path = directory / video_filename
             if video_path.exists() and video_uploaded:
                 try:
                     os.remove(video_path)

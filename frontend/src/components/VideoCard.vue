@@ -79,13 +79,22 @@ export default {
 
     downloadVideo() {
       const url = getFileDownloadUrl(this.video.file_path);
-      // Create a temporary link and trigger download
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', this.video.filename);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const filename = this.video.filename || 'video.mp4';
+      
+      console.log('VideoCard triggering download for:', url);
+      
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      if (isMobile) {
+        window.location.href = url;
+      } else {
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
     },
     
     formatDuration(seconds) {

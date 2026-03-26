@@ -8,7 +8,13 @@ import axios from 'axios';
 // Determine API Base URL based on environment
 const getBaseUrl = () => {
     if (import.meta.env.DEV) {
-        return 'http://localhost:5000/api';
+        // In local development, if VITE_API_URL is missing, use current hostname
+        // This allows mobile testing on the same network
+        const apiUrl = import.meta.env.VITE_API_URL;
+        if (apiUrl) return apiUrl.endsWith('/api') ? apiUrl : `${apiUrl.replace(/\/$/, '')}/api`;
+        
+        const host = window.location.hostname;
+        return `http://${host}:5000/api`;
     }
     
     let url = import.meta.env.VITE_API_URL || '';
