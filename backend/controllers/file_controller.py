@@ -214,15 +214,24 @@ def download_file():
             abs_path = str(file_path.absolute())
             logger.info(f"Downloading file: {abs_path}")
             
-            # Use application/octet-stream to FORCE download on iOS Safari
-            # If we use video/mp4, iOS often tries to play it instead of downloading
-            return send_file(
+            # Use extra headers more robustly to FORCE download on iOS Safari
+            response = send_file(
                 abs_path,
-                mimetype='application/octet-stream',
+                mimetype='application/force-download',
                 as_attachment=True,
                 download_name=file_path.name,
                 conditional=True
             )
+            
+            # Additional headers to prevent Safari from playing the video
+            response.headers["Content-Description"] = "File Transfer"
+            response.headers["Content-Transfer-Encoding"] = "binary"
+            response.headers["X-Content-Type-Options"] = "nosniff"
+            response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+            response.headers["Pragma"] = "no-cache"
+            response.headers["Expires"] = "0"
+            
+            return response
         
         # If not found locally, try to get S3 URL if possible
         if file_service.s3_uploader and file_service.s3_uploader.enabled:

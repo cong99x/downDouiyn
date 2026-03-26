@@ -179,8 +179,16 @@ export default {
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       
       if (isMobile) {
-        // Direct assignment works better for S3 redirects on mobile browsers
-        window.location.href = url;
+        // Use a hidden anchor with target="_blank" for iOS Safari compatibility
+        // This triggers the download prompt in a new tab if necessary, 
+        // without navigating away from the current page.
+        const a = document.createElement('a');
+        a.href = url;
+        a.target = '_blank';
+        a.download = fileInfo.filename || 'video.mp4';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
       } else {
         // Desktop can use the standard <a> tag approach
         const link = document.createElement('a');
