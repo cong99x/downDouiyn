@@ -355,6 +355,9 @@ class DownloadService:
             author_name = video_data.get('author', {}).get('nickname', 'Unknown')
             video_desc = video_data.get('desc', 'No title')
             
+            # Find the downloaded file
+            video_filename = self._find_downloaded_file(aweme_path, aweme_id)
+            
             if not video_filename:
                 logger.error(f"TikTok download completed but video file not found for aweme_id: {aweme_id}")
                 return {
@@ -429,6 +432,8 @@ class DownloadService:
         
         return None
     
+    def set_cookie(self, cookie: str):
+        """Update cookie for Douyin API"""
         douyin_headers["Cookie"] = cookie
         self.douyin.set_cookies(cookie)
         logger.info("Cookie updated")
