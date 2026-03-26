@@ -231,7 +231,17 @@ class TikTokApi(object):
         self.result.awemeDict["aweme_id"] = item.get("id")
         self.result.awemeDict["desc"] = item.get("desc")
         self.result.awemeDict["create_time"] = time.strftime("%Y-%m-%d %H.%M.%S", time.localtime(int(item.get("createTime", 0))))
-        self.result.awemeDict["awemeType"] = 1 if item.get('imagePost') else 0
+        # Detect type: favor video if playAddr exists, otherwise photo post
+        video = item.get("video", {})
+        play_url = video.get("playAddr") or video.get("downloadAddr")
+        
+        # If there's a valid video URL, we can treat it as a video (awemeType = 0)
+        # Even if it's an imagePost, if TikTok provides a rendered slideshow video, we want that.
+        if play_url:
+            self.result.awemeDict["awemeType"] = 0
+            logger.info(f"Found video URL for TikTok post, prioritizing video over images.")
+        else:
+            self.result.awemeDict["awemeType"] = 1 if item.get('imagePost') else 0
         
         # Video
         video = item.get("video", {})
@@ -246,13 +256,30 @@ class TikTokApi(object):
         self.result.awemeDict["author"]["sec_uid"] = author.get("secUid")
         self.result.awemeDict["author"]["avatar_thumb"]["url_list"] = [author.get("avatarThumb", "")]
         
-        # Music
+        # Music & Images for TikTok Photo Posts
         music = item.get("music", {})
         music_url = music.get("playUrl")
         if music_url:
             self.result.awemeDict["music"]["play_url"]["url_list"] = [music_url]
         self.result.awemeDict["music"]["title"] = music.get("title")
         self.result.awemeDict["music"]["author"] = music.get("authorName")
+        
+        # Images (for Photo Posts)
+        image_post = item.get("imagePost", {})
+        if image_post:
+            images = image_post.get("images", [])
+            for img in images:
+                # TikTok image structure: displayAddr or main_url
+                img_url = img.get("displayAddr", {}).get("url_list", [None])[0] or \
+                          img.get("main_url", {}).get("url_list", [None])[0] or \
+                          img.get("thumbnail", {}).get("url_list", [None])[0]
+                
+                if img_url:
+                    self.result.awemeDict["images"].append({"url_list": [img_url]})
+            
+            # If we found images, ensure type is 1 (Gallery)
+            if self.result.awemeDict["images"]:
+                self.result.awemeDict["awemeType"] = 1
         
         # Cover
         cover = video.get("cover")
